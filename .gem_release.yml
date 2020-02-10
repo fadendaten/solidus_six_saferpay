@@ -1,0 +1,5 @@
+bump:
+  recurse: false
+  file: 'lib/solidus_six_saferpay/version.rb'
+  message: Bump SolidusSixSaferpay to %{version}
+  tag: true

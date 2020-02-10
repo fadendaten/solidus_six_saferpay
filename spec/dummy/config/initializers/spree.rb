@@ -22,6 +22,14 @@ Spree.config do |config|
   config.image_attachment_module = 'Spree::Image::PaperclipAttachment'
   config.taxon_attachment_module = 'Spree::Taxon::PaperclipAttachment'
 
+  # Defaults
+
+  # Set this configuration to `true` to raise an exception when
+  # an order is populated with a line item with a mismatching
+  # currency. The `false` value will just add a validation error
+  # and will be the only behavior accepted in future versions.
+  # See https://github.com/solidusio/solidus/pull/3456 for more info.
+  config.raise_with_invalid_currency = false
 
   # Permission Sets:
 
@@ -69,3 +77,11 @@ Spree.user_class = "Spree::LegacyUser"
 # just uncomment the following code and change it as you need.
 #
 # Spree::Model.whitelisted_ransackable_attributes << 'field'
+
+# Rules for avoiding to store the current path into session for redirects
+# When at least one rule is matched, the request path will not be stored
+# in session.
+# You can add your custom rules by uncommenting this line and changing
+# the class name:
+#
+# Spree::UserLastUrlStorer.rules << 'Spree::UserLastUrlStorer::Rules::AuthenticationRule'
