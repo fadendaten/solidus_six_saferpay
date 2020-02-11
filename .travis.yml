@@ -7,8 +7,7 @@ before_install:
   - gem install bundler -v 2.0.1
 
 script:
-  - "spec/dummy/bin/setup"
-  - bundle exec rake
+  - bin/rake
 
 notifications:
   slack: fadendaten:tWoet2mtObvbwSZSyUAY93jl
