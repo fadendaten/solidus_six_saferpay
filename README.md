@@ -1,5 +1,4 @@
 # SolidusSixSaferpay
-==================
 
 The `solidus_six_saferpay` engine adds checkout options for the Saferpay Payment Page ([Integration Guide](https://saferpay.github.io/sndbx/Integration_PP.html), [JSON API documentation](http://saferpay.github.io/jsonapi/#ChapterPaymentPage)) and the Saferpay Transaction ([Integration Guide](https://saferpay.github.io/sndbx/Integration_trx.html), [JSON API documentation](https://saferpay.github.io/sndbx/Integration_trx.html)).
 
