@@ -6,11 +6,11 @@ Gem::Specification.new do |spec|
   spec.name = 'solidus_six_saferpay'
   spec.version = SolidusSixSaferpay::VERSION
   spec.authors = ['Simon Kiener']
-  spec.email = '["jugglinghobo@gmail.com"]'
+  spec.email = ['jugglinghobo@gmail.com']
 
   spec.summary = 'Saferpay Payment Page and Transaction payment methods for Solidus'
   spec.description = 'Adds Saferpay Payment Page and Transaction payment methods to your Solidus application'
-  spec.homepage = 'https://fadendaten.ch'
+  spec.homepage = 'https://github.com/fadendaten/solidus_six_saferpay'
   spec.license = 'MIT'
 
   spec.metadata['homepage_uri'] = spec.homepage
