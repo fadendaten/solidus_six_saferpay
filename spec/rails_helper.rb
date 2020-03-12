@@ -13,7 +13,7 @@ require 'factory_bot_rails'
 require 'shoulda/matchers'
 require 'simplecov'
 
-require 'solidus_support/extension/rails_helper'
+require 'solidus_dev_support/rspec/rails_helper'
 
 SimpleCov.start do
   add_filter 'spec/dummy'

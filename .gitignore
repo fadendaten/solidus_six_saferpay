@@ -5,6 +5,8 @@ spec/dummy
 coverage/
 Gemfile.lock
 
+/spec/examples.txt
+
 .DS_Store
 
 *.gem
