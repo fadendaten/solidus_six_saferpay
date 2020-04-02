@@ -102,22 +102,45 @@ RSpec.describe Spree::SolidusSixSaferpay::Transaction::CheckoutController, type:
             allow(Spree::SolidusSixSaferpay::ProcessTransactionPayment).to receive(:call).with(payment).and_return(processed_payment)
           end
 
+          context 'when the default success handling is applied' do
+            context 'when order is in payment state' do
+              let(:order) { create(:order, state: :payment) }
 
-          context 'when order is in payment state' do
-            let(:order) { create(:order, state: :payment) }
+              it 'moves order to next state' do
+                expect(order).to receive(:next!)
 
-            it 'moves order to next state' do
-              expect(order).to receive(:next!)
+                get :success
+              end
+            end
 
-              get :success
+            context 'when order is already in complete state' do
+              let(:order) { create(:order, state: :complete) }
+
+              it 'does not modify the order state' do
+                expect(order).not_to receive(:next!)
+
+                get :success
+              end
             end
           end
 
-          context 'when order is already in complete state' do
-            let(:order) { create(:order, state: :complete) }
+          context 'when a custom success handling is applied' do
+            let(:custom_handler) do
+              Proc.new { |context, order| order.email }
+            end
+
+            before do
+              allow(::SolidusSixSaferpay.config).to receive(:payment_processing_success_handler).and_return(custom_handler)
+            end
 
             it 'does not modify the order state' do
               expect(order).not_to receive(:next!)
+
+              get :success
+            end
+
+            it 'executes the custom handler' do
+              expect(order).to receive(:email)
 
               get :success
             end
