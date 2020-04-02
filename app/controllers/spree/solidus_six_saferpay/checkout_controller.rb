@@ -38,7 +38,7 @@ module Spree
 
           processed_authorization = process_authorization(saferpay_payment)
           if processed_authorization.success?
-            @order.next! if @order.payment?
+            handle_payment_processing_success
           else
             flash[:error] = processed_authorization.user_message
           end
@@ -48,7 +48,7 @@ module Spree
           flash[:error] = payment_inquiry.user_message
         end
 
-        @redirect_path = order_checkout_path(@order.state)
+        @redirect_path ||= order_checkout_path(@order.state)
         render :iframe_breakout_redirect, layout: false
       end
 
@@ -82,6 +82,22 @@ module Spree
 
       def inquire_payment(saferpay_payment)
         raise NotImplementedError, "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
+      end
+
+      # Allows overriding of success behaviour in host application by setting
+      # SolidusSixSaferpay.config.payment_processing_success_handler
+      # 
+      # By default, it will ensure that the order state is no longer "payment"
+      #
+      # Example
+      # config.payment_processing_success_handler = Proc.new { |order| puts "Order #{order} has been successfully paid!" }
+      #
+      def handle_payment_processing_success
+        if success_handler = ::SolidusSixSaferpay.config.payment_processing_success_handler.presence
+          success_handler.call(self, @order)
+        else
+          @order.next! if @order.payment?
+        end
       end
 
       def load_order

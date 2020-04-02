@@ -1,8 +1,16 @@
 # frozen_string_literal: true
 
 require 'spree/core'
-
 module SolidusSixSaferpay
+
+  def self.config
+    @config ||= Configuration.new
+  end
+
+  def self.configure
+    yield config
+  end
+
   class Engine < Rails::Engine
     include SolidusSupport::EngineExtensions::Decorators
 

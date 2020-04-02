@@ -1,12 +1,8 @@
 module SolidusSixSaferpay
-
   class Configuration
-    def self.config
-      yield(self)
-    end
+    include ActiveSupport::Configurable
 
-    def self.error_handlers
-      @error_handlers ||= []
-    end
+
+    config_accessor(:payment_processing_success_handler)
   end
 end
