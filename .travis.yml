@@ -1,15 +1,12 @@
-sudo: false
 language: ruby
 rvm:
-  - 2.5.1
-
+- 2.5.1
 before_install:
-  - gem install bundler -v 2.0.1
-
+- gem install bundler -v 2.0.1
 script:
-  - "spec/dummy/bin/setup"
-  - bundle exec rake
-
+- bin/rake extension:test_app
+- bin/rake extension:specs
 notifications:
-  slack: fadendaten:tWoet2mtObvbwSZSyUAY93jl
+  slack:
+    secure: Vpuu/JENlZAiH67DU5bFmyKlKNmhiAZ0wSd6mjFyzcFAXaEbFIt9xkMigoEwLfQh/ZMUvKQcv3oQ6s9j5FkYImRZ0gfs1me7z/H8NTXMF5eOu7aS/gRHMGq8x2nvDBqNhSVtffqLfF3aydjZPJvGz8cvAQtqw4b+qOSIuxs2BOpcMMgEZEXW7Py6AthY2p1jxByyiqGB7NcvKsQedVtgdrnK4j+jcwK6Q9/DTOMivhWLEWAvn6VJ5zMomM5FdOFfH86uhHASGYB72ufpmKUwmFASSNHBM3CNQhZ0O/LS+a1dOlaW1BhU5q6KS/q6vgEYHyjdqcD7HhKFdlaVm6W/N1lbX+MFFcFT++l6CN8Aa3xmYpy/zWO5wwBRZw0zhYT/7P4BRoCll1D7RetnGcIV6KJyC0ydn2u/pi1kKBOgzuwbgQ+pH/lPH9+HuZzlhynRBdz2v45ctXf6AFQZmfJvFEBNwb38Q08zzGcCru0+Lu4uhFFLEwi2oMCWtpUsk0PfUJf/cUfp0hluh8wZsQWe+VQOS1NjmL8/yxjijFGzmS8WmMTb+fw7bRXFir0ecdntbP9aAhJxBN4PaMfYEFzBjCbc1e2gmwXk0VBV/0IH9hxxzIorUSmGydrWLDWiap0yDC2bm+gndodxKawT4+O45qB9jI5aYXG6JlHzrTn8QU4=
   email: false

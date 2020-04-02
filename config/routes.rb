@@ -1,5 +1,6 @@
-Spree::Core::Engine.routes.draw do
+# frozen_string_literal: true
 
+Spree::Core::Engine.routes.draw do
   namespace :solidus_six_saferpay do
     namespace :payment_page do
       get :init, controller: :checkout, defaults: { format: :json }
@@ -13,5 +14,4 @@ Spree::Core::Engine.routes.draw do
       get :fail, controller: :checkout
     end
   end
-
 end
