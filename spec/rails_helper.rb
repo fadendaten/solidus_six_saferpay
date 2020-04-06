@@ -9,7 +9,6 @@ require 'rspec/rails'
 
 # require 'active_support/core_ext/string/deep_symbolize_keys'
 
-require 'factory_bot_rails'
 require 'shoulda/matchers'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
