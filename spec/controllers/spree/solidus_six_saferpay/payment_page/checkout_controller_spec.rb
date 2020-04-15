@@ -59,6 +59,26 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
   end
 
   describe 'GET success' do
+    context 'when the order is not found' do
+      let(:order) { nil }
+
+      it 'redirects to the cart page via iframe breakout' do
+        get :success
+        expect(assigns(:redirect_path)).to eq(routes.cart_path)
+        expect(response).to render_template :iframe_breakout_redirect
+      end
+    end
+
+    context 'when the order is already completed' do
+      let(:order) { create(:order_ready_to_ship) }
+
+      it 'redirects to the cart page via iframe breakout' do
+        get :success
+        expect(assigns(:redirect_path)).to eq(routes.cart_path)
+        expect(response).to render_template :iframe_breakout_redirect
+      end
+    end
+
     context 'when payment could not be created' do
       let!(:payment) { nil }
 

@@ -2,9 +2,13 @@ module Spree
   module SolidusSixSaferpay
     class CheckoutController < StoreController
 
-      before_action :load_order
-
       def init
+        # loading the order is not shared between actions because the success
+        # action must break out of the iframe
+        @order = current_order
+        redirect_to(spree.cart_path) && return unless @order
+
+
         payment_method = Spree::PaymentMethod.find(params[:payment_method_id])
         initialized_payment = initialize_payment(@order, payment_method)
 
@@ -17,6 +21,24 @@ module Spree
       end
 
       def success
+        # loading the order is not shared between actions because the success
+        # action must break out of the iframe
+        @order = current_order
+        if @order.nil?
+          @redirect_path = spree.cart_path
+          render :iframe_breakout_redirect, layout: false
+          return
+        end
+
+        # ensure that completed orders don't try to reprocess the
+        # authorization. This could happen if a user presses the back button
+        # after completing an order.
+        if @order.completed?
+          @redirect_path = spree.cart_path
+          render :iframe_breakout_redirect, layout: false
+          return
+        end
+
         saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
 
         if saferpay_payment.nil?
@@ -53,6 +75,15 @@ module Spree
       end
 
       def fail
+        # loading the order is not shared between actions because the success
+        # action must break out of the iframe
+        @order = current_order
+        if @order.nil?
+          @redirect_path = spree.cart_path
+          render :iframe_breakout_redirect, layout: false
+          return
+        end
+
         saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
 
         if saferpay_payment
@@ -98,11 +129,6 @@ module Spree
         else
           @order.next! if @order.payment?
         end
-      end
-
-      def load_order
-        @order = current_order
-        redirect_to(spree.cart_path) && return unless @order
       end
 
       def order_checkout_path(state)
