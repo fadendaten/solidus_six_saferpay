@@ -8,8 +8,6 @@ module SolidusSixSaferpay
     let(:terminal_id) { 'TERMINAL_ID' }
     let(:username) { 'USERNAME' }
     let(:password) { 'PASSWORD' }
-    let(:success_url) { '/api/endpoints/success' }
-    let(:fail_url) { '/api/endpoints/fail' }
     let(:base_url) { 'https://test.saferpay-api-host.test' }
     let(:css_url) { '/custom/css/url' }
 
@@ -36,17 +34,6 @@ module SolidusSixSaferpay
       allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_PASSWORD').and_return(password)
       allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_BASE_URL').and_return(base_url)
       allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_CSS_URL').and_return(css_url)
-    end
-
-    describe '#initialize' do
-      it 'configures the API client with correct urls by default' do
-        described_class.new
-
-        config = SixSaferpay.config
-
-        expect(config.success_url).to eq(solidus_six_saferpay_transaction_success_url)
-        expect(config.fail_url).to eq(solidus_six_saferpay_transaction_fail_url)
-      end
     end
 
     describe '#initialize_payment' do
@@ -112,10 +99,19 @@ module SolidusSixSaferpay
         )
       end
 
+      let(:return_urls) do
+        instance_double("SixSaferpay::ReturnUrls",
+          success: solidus_six_saferpay_transaction_success_url(order),
+          fd_fail: solidus_six_saferpay_transaction_fail_url(order),
+          fd_abort: solidus_six_saferpay_transaction_fail_url(order),
+         )
+      end
+
       let(:initialize_params) do
         {
           payment: saferpay_payment,
-          payer: saferpay_payer
+          payer: saferpay_payer,
+          return_urls: return_urls
         }
       end
 
@@ -188,6 +184,13 @@ module SolidusSixSaferpay
           billing_address: saferpay_billing_address,
           delivery_address: saferpay_shipping_address
         ).and_return(saferpay_payer)
+
+        # mock return_urls
+        expect(SixSaferpay::ReturnUrls).to receive(:new).with(
+          success: solidus_six_saferpay_transaction_success_url(order),
+          fd_fail: solidus_six_saferpay_transaction_fail_url(order),
+          fd_abort: solidus_six_saferpay_transaction_fail_url(order),
+        ).and_return(return_urls)
 
         expect(SixSaferpay::SixTransaction::Initialize).to receive(:new).with(initialize_params).and_return(saferpay_initialize)
 

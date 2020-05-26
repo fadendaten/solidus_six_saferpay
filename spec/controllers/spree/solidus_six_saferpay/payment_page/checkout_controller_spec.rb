@@ -63,7 +63,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
       let(:order) { nil }
 
       it 'redirects to the cart page via iframe breakout' do
-        get :success
+        get :success, params: { order_number: "not_found" }
         expect(assigns(:redirect_path)).to eq(routes.cart_path)
         expect(response).to render_template :iframe_breakout_redirect
       end
@@ -73,7 +73,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
       let(:order) { create(:order_ready_to_ship) }
 
       it 'redirects to the cart page via iframe breakout' do
-        get :success
+        get :success, params: { order_number: order.number }
         expect(assigns(:redirect_path)).to eq(routes.cart_path)
         expect(response).to render_template :iframe_breakout_redirect
       end
@@ -83,7 +83,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
       let!(:payment) { nil }
 
       it 'raises an error because no payment exists' do
-        expect{ get(:success) }.to raise_error(Spree::Core::GatewayError)
+        expect{ get(:success, params: { order_number: order.number }) }.to raise_error(Spree::Core::GatewayError)
       end
     end
 
@@ -97,7 +97,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
         expect(Spree::SolidusSixSaferpay::AssertPaymentPage).to receive(:call).with(payment).and_return(payment_assert)
         expect(Spree::SolidusSixSaferpay::InquirePaymentPagePayment).to receive(:call).with(payment).and_return(payment_inquiry)
 
-        get :success
+        get :success, params: { order_number: order.number }
       end
 
       context 'when the payment assert is successful' do
@@ -112,7 +112,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
         it 'processes the asserted payment' do
           expect(Spree::SolidusSixSaferpay::ProcessPaymentPagePayment).to receive(:call).with(payment).and_return(processed_payment)
 
-          get :success
+          get :success, params: { order_number: order.number }
         end
 
         context 'when the processing is successful' do
@@ -120,6 +120,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
 
           before do
             allow(Spree::SolidusSixSaferpay::ProcessPaymentPagePayment).to receive(:call).with(payment).and_return(processed_payment)
+            allow(Spree::Order).to receive(:find_by).with(number: order.number).and_return(order)
           end
 
 
@@ -129,7 +130,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
             it 'moves order to next state' do
               expect(order).to receive(:next!)
 
-              get :success
+              get :success, params: { order_number: order.number }
             end
           end
 
@@ -139,7 +140,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
             it 'does not modify the order state' do
               expect(order).not_to receive(:next!)
 
-              get :success
+              get :success, params: { order_number: order.number }
             end
           end
         end
@@ -152,7 +153,7 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
           end
 
           it 'displays an error message' do
-            get :success
+            get :success, params: { order_number: order.number }
 
             expect(flash[:error]).to eq("payment processing message")
           end
@@ -170,12 +171,12 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
         it 'inquires the payment' do
           expect(Spree::SolidusSixSaferpay::InquirePaymentPagePayment).to receive(:call).with(payment).and_return(payment_inquiry)
 
-          get :success
+          get :success, params: { order_number: order.number }
         end
 
         it 'displays an error message' do
           expect(Spree::SolidusSixSaferpay::InquirePaymentPagePayment).to receive(:call).with(payment).and_return(payment_inquiry)
-          get :success
+          get :success, params: { order_number: order.number }
 
           expect(flash[:error]).to eq("payment inquiry message")
         end
@@ -190,13 +191,13 @@ RSpec.describe Spree::SolidusSixSaferpay::PaymentPage::CheckoutController, type:
     it 'inquires the payment' do
       expect(Spree::SolidusSixSaferpay::InquirePaymentPagePayment).to receive(:call).with(payment).and_return(payment_inquiry)
 
-      get :fail
+      get :fail, params: { order_number: order.number }
     end
 
     it 'displays an error message' do
       expect(Spree::SolidusSixSaferpay::InquirePaymentPagePayment).to receive(:call).with(payment).and_return(payment_inquiry)
 
-      get :fail
+      get :fail, params: { order_number: order.number }
 
       expect(flash[:error]).to eq("payment inquiry message")
     end

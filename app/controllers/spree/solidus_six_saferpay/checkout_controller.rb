@@ -3,8 +3,6 @@ module Spree
     class CheckoutController < StoreController
 
       def init
-        # loading the order is not shared between actions because the success
-        # action must break out of the iframe
         @order = current_order
         redirect_to(spree.cart_path) && return unless @order
 
@@ -21,9 +19,9 @@ module Spree
       end
 
       def success
-        # loading the order is not shared between actions because the success
-        # action must break out of the iframe
-        @order = current_order
+        order_number = params[:order_number]
+        @order = Spree::Order.find_by(number: order_number)
+
         if @order.nil?
           @redirect_path = spree.cart_path
           render :iframe_breakout_redirect, layout: false
@@ -75,9 +73,9 @@ module Spree
       end
 
       def fail
-        # loading the order is not shared between actions because the success
-        # action must break out of the iframe
-        @order = current_order
+        order_number = params[:order_number]
+        @order = Spree::Order.find_by(number: order_number)
+
         if @order.nil?
           @redirect_path = spree.cart_path
           render :iframe_breakout_redirect, layout: false

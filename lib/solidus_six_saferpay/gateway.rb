@@ -5,9 +5,6 @@ module SolidusSixSaferpay
 
     def initialize(options = {})
       SixSaferpay.configure do |config|
-        config.success_url = options.fetch(:success_url)
-        config.fail_url = options.fetch(:fail_url)
-
         # Allow config via ENV for static values
         config.customer_id = options.fetch(:customer_id) { ENV.fetch('SIX_SAFERPAY_CUSTOMER_ID') }
         config.terminal_id = options.fetch(:terminal_id) { ENV.fetch('SIX_SAFERPAY_TERMINAL_ID') }
@@ -156,12 +153,16 @@ module SolidusSixSaferpay
       )
       payer = SixSaferpay::Payer.new(language_code: I18n.locale, billing_address: billing_address, delivery_address: delivery_address)
 
-      params = { payment: payment, payer: payer }
+      params = { payment: payment, payer: payer, return_urls: return_urls(order) }
 
       six_payment_methods = payment_method.enabled_payment_methods
       params.merge!(payment_methods: six_payment_methods) unless six_payment_methods.blank?
 
       params
+    end
+
+    def return_urls(order)
+      raise NotImplementedError, "Must be imnplemented in PaymentPageGateway or TransactionGateway"
     end
 
     def response(success, message, api_response, options = {})
