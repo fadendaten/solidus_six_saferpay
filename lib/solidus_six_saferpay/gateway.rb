@@ -162,7 +162,7 @@ module SolidusSixSaferpay
     end
 
     def return_urls(order)
-      raise NotImplementedError, "Must be imnplemented in PaymentPageGateway or TransactionGateway"
+      raise NotImplementedError, "Must be implemented in PaymentPageGateway or TransactionGateway"
     end
 
     def response(success, message, api_response, options = {})
