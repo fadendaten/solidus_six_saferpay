@@ -21,7 +21,7 @@ module Spree
         if inquiry.success?
           saferpay_payment.update_attributes(response_hash: inquiry.api_response.to_h)
         else
-          saferpay_payment.update_attributes(response_hash: response_hash.merge(error: "#{inquiry.error_name}: #{inquiry.error_message}"))
+          saferpay_payment.update_attributes(response_hash: saferpay_payment.response_hash.merge(error: "#{inquiry.error_name}"))
           general_error = I18n.t(:general_error, scope: [:solidus_six_saferpay, :errors])
           specific_error = I18n.t(inquiry.error_name, scope: [:six_saferpay, :error_names])
           @user_message = "#{general_error}: #{specific_error}"
