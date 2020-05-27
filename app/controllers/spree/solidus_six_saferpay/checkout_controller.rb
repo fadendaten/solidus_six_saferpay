@@ -8,10 +8,6 @@ module Spree
 
 
         payment_method = Spree::PaymentMethod.find(params[:payment_method_id])
-        Spree::LogEntry.create(
-          source: @order,
-          details: "Initializing Spree::SixSaferpayPayment for PaymentMethod #{payment_method.id} (#{payment_method.name})"
-        )
         initialized_payment = initialize_payment(@order, payment_method)
 
         if initialized_payment.success?
@@ -26,11 +22,6 @@ module Spree
         order_number = params[:order_number]
         @order = Spree::Order.find_by(number: order_number)
 
-        Spree::LogEntry.create(
-          source: @order,
-          details: "A payment for this order was completed successfully by the user. We are now trying to handle this payment."
-        )
-
         if @order.nil?
           @redirect_path = spree.cart_path
           render :iframe_breakout_redirect, layout: false
@@ -41,10 +32,6 @@ module Spree
         # authorization. This could happen if a user presses the back button
         # after completing an order.
         if @order.completed?
-          Spree::LogEntry.create(
-            source: @order,
-            details: "Order already completed. Redirecting to cart path."
-          )
           @redirect_path = spree.cart_path
           render :iframe_breakout_redirect, layout: false
           return
@@ -53,17 +40,8 @@ module Spree
         saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
 
         if saferpay_payment.nil?
-          Spree::LogEntry.create(
-            source: @order,
-            details: "Could not find a Spree::SixSaferpayPayment for this order."
-          )
           raise Spree::Core::GatewayError, t('.saferpay_payment_not_found')
         end
-
-        Spree::LogEntry.create(
-          source: @order,
-          details: "The payment #{saferpay_payment.id} is being authorized and then processed."
-        )
 
         # NOTE: PaymentPage payments are authorized directly. Instead, we
         # perform an ASSERT here to gather the necessary details.
@@ -80,25 +58,13 @@ module Spree
 
           processed_authorization = process_authorization(saferpay_payment)
           if processed_authorization.success?
-            Spree::LogEntry.create(
-              source: @order,
-              details: "The Spree::SixSaferpayPayment #{saferpay_payment.id} was processed successfully. Now handling processing success."
-            )
             handle_payment_processing_success
           else
-            Spree::LogEntry.create(
-              source: @order,
-              details: "The Spree::SixSaferpayPayment #{saferpay_payment.id} failed to process. User was informed with: #{processed_authorization.user_message}"
-            )
             flash[:error] = processed_authorization.user_message
           end
 
         else
           payment_inquiry = inquire_payment(saferpay_payment)
-          Spree::LogEntry.create(
-            source: @order,
-            details: "The Spree::SixSaferpayPayment #{saferpay_payment.id} could not be authorized. User was informed with: #{payment_inquiry.user_message}"
-          )
           flash[:error] = payment_inquiry.user_message
         end
 
@@ -121,17 +87,9 @@ module Spree
 
         if saferpay_payment
           payment_inquiry = inquire_payment(saferpay_payment)
-          Spree::LogEntry.create(
-            source: @order,
-            details: "FAIL: The Spree::SixSaferpayPayment #{saferpay_payment.id} failed. User was informed with: #{user_message}"
-          )
           flash[:error] = payment_inquiry.user_message
         else
           user_message = I18n.t(:general_error, scope: [:solidus_six_saferpay, :errors])
-          Spree::LogEntry.create(
-            source: @order,
-            details: "FAIL: A payment for this order failed, but we can not find it. User was informed with #{user_message}",
-          )
           flash[:error] = user_message
         end
 
