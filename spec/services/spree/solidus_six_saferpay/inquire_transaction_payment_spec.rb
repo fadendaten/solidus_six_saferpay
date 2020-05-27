@@ -44,8 +44,8 @@ module Spree
             expect(subject).to be_success
           end
 
-          it 'does not update the response hash' do
-            expect { subject.call }.not_to change { payment.response_hash }
+          it 'adds the error message to the response hash' do
+            expect { subject.call }.to change { payment.response_hash }.from({}).to({error: error_name})
           end
 
           it 'sets the user message according to the api error code' do

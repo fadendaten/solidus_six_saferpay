@@ -3,8 +3,6 @@ module Spree
     class CheckoutController < StoreController
 
       def init
-        # loading the order is not shared between actions because the success
-        # action must break out of the iframe
         @order = current_order
         redirect_to(spree.cart_path) && return unless @order
 
@@ -21,9 +19,9 @@ module Spree
       end
 
       def success
-        # loading the order is not shared between actions because the success
-        # action must break out of the iframe
-        @order = current_order
+        order_number = params[:order_number]
+        @order = Spree::Order.find_by(number: order_number)
+
         if @order.nil?
           @redirect_path = spree.cart_path
           render :iframe_breakout_redirect, layout: false
@@ -75,9 +73,9 @@ module Spree
       end
 
       def fail
-        # loading the order is not shared between actions because the success
-        # action must break out of the iframe
-        @order = current_order
+        order_number = params[:order_number]
+        @order = Spree::Order.find_by(number: order_number)
+
         if @order.nil?
           @redirect_path = spree.cart_path
           render :iframe_breakout_redirect, layout: false
@@ -86,11 +84,13 @@ module Spree
 
         saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
 
+
         if saferpay_payment
           payment_inquiry = inquire_payment(saferpay_payment)
           flash[:error] = payment_inquiry.user_message
         else
-          flash[:error] = I18n.t(:general_error, scope: [:solidus_six_saferpay, :errors])
+          user_message = I18n.t(:general_error, scope: [:solidus_six_saferpay, :errors])
+          flash[:error] = user_message
         end
 
         @redirect_path = order_checkout_path(:payment)

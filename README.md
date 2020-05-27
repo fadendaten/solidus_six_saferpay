@@ -2,6 +2,9 @@
 
 The `solidus_six_saferpay` engine adds checkout options for the Saferpay Payment Page ([Integration Guide](https://saferpay.github.io/sndbx/Integration_PP.html), [JSON API documentation](http://saferpay.github.io/jsonapi/#ChapterPaymentPage)) and the Saferpay Transaction ([Integration Guide](https://saferpay.github.io/sndbx/Integration_trx.html), [JSON API documentation](https://saferpay.github.io/sndbx/Integration_trx.html)).
 
+### Disclaimer
+This gem is built to be a general-purpose integration of the Six Saferpay payment interface. However due to lack of resources and because we are (as far as we know) the only users of this gem, we are only testing our use cases (PaymentPage). Therefore we can not guarantee that this will work in any other solidus shop. If you consider using this gem, please test everything thoroughly.
+
 ## Status
 Travis CI status: [![Build Status](https://travis-ci.org/fadendaten/solidus_six_saferpay.svg?branch=master)](https://travis-ci.org/fadendaten/solidus_six_saferpay)
 

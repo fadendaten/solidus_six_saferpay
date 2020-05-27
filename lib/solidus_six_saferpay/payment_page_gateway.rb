@@ -1,15 +1,6 @@
 module SolidusSixSaferpay
   class PaymentPageGateway < Gateway
 
-    def initialize(options = {})
-      super(
-        options.merge(
-          success_url: url_helpers.solidus_six_saferpay_payment_page_success_url,
-          fail_url: url_helpers.solidus_six_saferpay_payment_page_fail_url
-        )
-      )
-    end
-
     def inquire(saferpay_payment, options = {})
       inquire_response = perform_assert_request(saferpay_payment, options)
 
@@ -45,6 +36,14 @@ module SolidusSixSaferpay
 
     def interface_initialize_object(order, payment_method)
       SixSaferpay::SixPaymentPage::Initialize.new(interface_initialize_params(order, payment_method))
+    end
+
+    def return_urls(order)
+      SixSaferpay::ReturnUrls.new(
+        success: url_helpers.solidus_six_saferpay_payment_page_success_url(order.number),
+        fd_fail: url_helpers.solidus_six_saferpay_payment_page_fail_url(order.number),
+        fd_abort: url_helpers.solidus_six_saferpay_payment_page_fail_url(order.number)
+      )
     end
 
     def perform_assert_request(saferpay_payment, options = {})

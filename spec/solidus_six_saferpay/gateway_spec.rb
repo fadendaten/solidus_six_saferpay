@@ -7,15 +7,11 @@ module SolidusSixSaferpay
     let(:terminal_id) { 'TERMINAL_ID' }
     let(:username) { 'USERNAME' }
     let(:password) { 'PASSWORD' }
-    let(:success_url) { '/api/endpoints/success' }
-    let(:fail_url) { '/api/endpoints/fail' }
     let(:base_url) { 'https://test.saferpay-api-host.test' }
     let(:css_url) { '/custom/css/url' }
 
     let(:gateway) do
       described_class.new(
-        success_url: success_url,
-        fail_url: fail_url,
         customer_id: customer_id,
         terminal_id: terminal_id,
         username: username,
@@ -29,8 +25,6 @@ module SolidusSixSaferpay
       
       it 'configures the API client' do
         gateway = described_class.new(
-          success_url: success_url,
-          fail_url: fail_url,
           customer_id: customer_id,
           terminal_id: terminal_id,
           username: username,
@@ -45,8 +39,6 @@ module SolidusSixSaferpay
         expect(config.terminal_id).to eq(terminal_id)
         expect(config.username).to eq(username)
         expect(config.password).to eq(password)
-        expect(config.success_url).to eq(success_url)
-        expect(config.fail_url).to eq(fail_url)
         expect(config.base_url).to eq(base_url)
         expect(config.css_url).to eq(css_url)
       end
@@ -63,10 +55,7 @@ module SolidusSixSaferpay
         end
         
         it 'falls back to ENV vars' do
-          gateway = described_class.new(
-            success_url: success_url,
-            fail_url: fail_url
-          )
+          gateway = described_class.new
 
           config = SixSaferpay.config
 
@@ -74,8 +63,6 @@ module SolidusSixSaferpay
           expect(config.terminal_id).to eq(terminal_id)
           expect(config.username).to eq(username)
           expect(config.password).to eq(password)
-          expect(config.success_url).to eq(success_url)
-          expect(config.fail_url).to eq(fail_url)
           expect(config.base_url).to eq(base_url)
           expect(config.css_url).to eq(css_url)
         end
