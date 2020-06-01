@@ -87,23 +87,24 @@ module SolidusSixSaferpay
     end
 
     def refund(amount, transaction_id, options = {})
-      payment = Spree::Payment.find_by!(response_code: transaction_id)
-      refund_amount = Spree::Money.new(amount, currency: payment.currency)
+      Rollbar.error("Disabled Refund for: #{transaction_id}")
+      # payment = Spree::Payment.find_by!(response_code: transaction_id)
+      # refund_amount = Spree::Money.new(amount, currency: payment.currency)
 
-      saferpay_amount = SixSaferpay::Amount.new(value: refund_amount.cents, currency_code: payment.currency)
-      saferpay_refund = SixSaferpay::Refund.new(amount: saferpay_amount, order_id: payment.order.number)
-      capture_reference = SixSaferpay::CaptureReference.new(capture_id: payment.transaction_id)
+      # saferpay_amount = SixSaferpay::Amount.new(value: refund_amount.cents, currency_code: payment.currency)
+      # saferpay_refund = SixSaferpay::Refund.new(amount: saferpay_amount, order_id: payment.order.number)
+      # capture_reference = SixSaferpay::CaptureReference.new(capture_id: payment.transaction_id)
 
-      payment_refund = SixSaferpay::SixTransaction::Refund.new(refund: saferpay_refund, capture_reference: capture_reference)
+      # payment_refund = SixSaferpay::SixTransaction::Refund.new(refund: saferpay_refund, capture_reference: capture_reference)
 
-      if refund_response = SixSaferpay::Client.post(payment_refund)
+      # if refund_response = SixSaferpay::Client.post(payment_refund)
 
-        # actually capture the refund
-        capture(amount, refund_response.transaction.id, options)
-      end
+      #   # actually capture the refund
+      #   capture(amount, refund_response.transaction.id, options)
+      # end
 
-    rescue SixSaferpay::Error => e
-      handle_error(e, refund_response)
+    # rescue SixSaferpay::Error => e
+      # handle_error(e, refund_response)
     end
 
     private
