@@ -40,7 +40,7 @@ module SolidusSixSaferpay
       capture(amount, saferpay_payment.transaction_id, options)
     end
 
-    def capture(amount, transaction_id, options={})
+    def capture(_amount, transaction_id, options={})
       transaction_reference = SixSaferpay::TransactionReference.new(transaction_id: transaction_id)
       payment_capture = SixSaferpay::SixTransaction::Capture.new(transaction_reference: transaction_reference)
 
@@ -79,15 +79,14 @@ module SolidusSixSaferpay
     end
 
     # aliased to #refund for compatibility with solidus internals
-    def credit(amount, transaction_id, options = {})
-      refund(amount, transaction_id, options)
+    def credit(amount_cents, transaction_id, options = {})
+      refund(amount_cents, transaction_id, options)
     end
 
-    def refund(amount, transaction_id, options = {})
+    def refund(amount_cents, transaction_id, options = {})
       payment = Spree::Payment.find_by!(response_code: transaction_id)
-      refund_amount = Spree::Money.new(amount, currency: payment.currency)
 
-      saferpay_amount = SixSaferpay::Amount.new(value: refund_amount.cents, currency_code: payment.currency)
+      saferpay_amount = SixSaferpay::Amount.new(value: amount_cents, currency_code: payment.currency)
       saferpay_refund = SixSaferpay::Refund.new(amount: saferpay_amount, order_id: payment.order.number)
       capture_reference = SixSaferpay::CaptureReference.new(capture_id: payment.transaction_id)
 
@@ -96,7 +95,7 @@ module SolidusSixSaferpay
       if refund_response = SixSaferpay::Client.post(payment_refund)
 
         # actually capture the refund
-        capture(amount, refund_response.transaction.id, options)
+        capture(amount_cents, refund_response.transaction.id, options)
       end
 
     rescue SixSaferpay::Error => e
