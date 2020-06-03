@@ -1,7 +1,7 @@
 <html>
   <body>
     <script type='text/javascript' charset='utf-8'>
-      window.parent.document.location.href = "<%= @redirect_path %>"
+      window.parent.document.location.replace("<%= @redirect_path %>");
     </script>
   </body>
 </html>

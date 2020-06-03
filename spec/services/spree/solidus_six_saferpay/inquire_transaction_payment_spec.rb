@@ -100,6 +100,26 @@ module Spree
             )
           end
 
+          it 'updates the transaction_id' do
+            expect { subject.call }.to change { payment.transaction_id }.from(nil).to(transaction_id)
+          end
+
+          it 'updates the transaction status' do
+            expect { subject.call }.to change { payment.transaction_status }.from(nil).to(transaction_status)
+          end
+
+          it 'updates the transaction date' do
+            expect { subject.call }.to change { payment.transaction_date }.from(nil).to(DateTime.parse(transaction_date))
+          end
+
+          it 'updates the six_transaction_reference' do
+            expect { subject.call }.to change { payment.six_transaction_reference }.from(nil).to(six_transaction_reference)
+          end
+
+          it 'updates the display_text' do
+            expect { subject.call }.to change { payment.display_text }.from(nil).to(display_text)
+          end
+
           it 'updates the response hash' do
             expect { subject.call }.to change { payment.response_hash }.from(payment.response_hash).to(api_response.to_h)
           end

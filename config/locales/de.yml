@@ -5,7 +5,9 @@ de:
       checkout: &checkout
         init:
           checkout_not_initialized: Zahlung konnte nicht gestartet werden.
+          order_was_modified_after_confirmation: Bestellung wurde nach der Bestätigung verändert. Bitte starten Sie den Zahlungsvorgang erneut.
         success:
+          error_while_processing_payment: Beim Verarbeiten der Bezahlung ist ein Fehler aufgetreten. Bitte starten Sie den Zahlungsvorgang erneut.
           saferpay_payment_not_found: Six Saferpay Zahlung kann nicht gefunden werden.
         fail:
           payment_failed: Die Zahlung konnte nicht abgeschlossen werden.
@@ -19,6 +21,7 @@ de:
     errors:
       general_error: Bezahlungsfehler
       liability_shift_not_granted:  Haftungsumkehr wurde abgelehnt
+      saferpay_payment_not_found: Saferpay Payment konnte nicht gefunden werden
   six_saferpay:
     error_names:
       ACTION_NOT_SUPPORTED: Die angeforderte Aktion wird im Kontext der Aktion nicht unterstützt un kann mit den Anforderungsdaten nicht ausgeführt werden.

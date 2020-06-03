@@ -5,8 +5,8 @@ module Spree
       ::SolidusSixSaferpay::TransactionGateway
     end
 
-    def init_path
-      url_helpers.solidus_six_saferpay_transaction_init_path
+    def init_path(order)
+      url_helpers.solidus_six_saferpay_transaction_init_path(order.number)
     end
   end
 end

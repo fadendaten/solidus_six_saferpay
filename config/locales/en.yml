@@ -5,7 +5,9 @@ en:
       checkout: &checkout
         init:
           checkout_not_initialized: Payment could not be initialized.
+          order_was_modified_after_confirmation: Order was modified after confirmation. Please restart the checkout process.
         success:
+          error_while_processing_payment: An error occurred while processing the payment. Please restart the checkout process.
           saferpay_payment_not_found: Six Saferpay payment can not be found.
         fail:
           payment_failed: The payment could not be completed.
@@ -19,6 +21,7 @@ en:
     errors:
       general_error: Payment Error
       liability_shift_not_granted:  Liability Shift was rejected
+      saferpay_payment_not_found: Saferpay Payment could not be found
   six_saferpay:
     error_names:
       ACTION_NOT_SUPPORTED:	The requested action is not supported in the given context or the action can't be executed with the request data.
