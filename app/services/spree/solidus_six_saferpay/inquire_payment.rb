@@ -19,7 +19,7 @@ module Spree
         inquiry = gateway.inquire(saferpay_payment)
 
         if inquiry.success?
-          saferpay_payment.update_attributes!(saferpay_payment_attributes(inquiry.api_response))
+          saferpay_payment.update_attributes(saferpay_payment_attributes(inquiry.api_response))
         else
           saferpay_payment.update_attributes(response_hash: saferpay_payment.response_hash.merge(error: "#{inquiry.error_name}"))
           general_error = I18n.t(:general_error, scope: [:solidus_six_saferpay, :errors])

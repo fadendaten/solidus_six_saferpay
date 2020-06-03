@@ -18,7 +18,7 @@ module Spree
         end
       end
 
-      describe '#call', :focus do
+      describe '#call' do
         let(:gateway) { instance_double(::SolidusSixSaferpay::Gateway) }
 
         before do

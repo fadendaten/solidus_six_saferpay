@@ -39,7 +39,6 @@ module Spree
           )
         end
 
-        # stub gateway to return our mock response
         before do
           allow(subject).to receive(:gateway).
             and_return(double('gateway', initialize_payment: gateway_response))

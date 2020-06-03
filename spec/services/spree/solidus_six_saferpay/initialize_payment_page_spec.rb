@@ -9,7 +9,6 @@ module Spree
 
       subject { described_class.new(order, payment_method) }
 
-
       describe '#gateway' do
         it_behaves_like "it uses the payment page gateway"
       end
@@ -37,7 +36,6 @@ module Spree
           )
         end
 
-        # stub gateway to return our mock response
         before do
           allow(subject).to receive(:gateway).
             and_return(double('gateway', initialize_payment: gateway_response))
