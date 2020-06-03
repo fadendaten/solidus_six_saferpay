@@ -62,11 +62,13 @@ RSpec.shared_examples 'checkout_controller' do
         allow(initialize_payment_service_class).to receive(:call).with(order, payment_method).and_return(initialized_payment)
       end
 
-      it 'returns an error' do
+
+      it 'returns an error and redirects to the cart page' do
         get :init, params: { order_number: order_number, payment_method_id: payment_method.id }
 
         body = JSON.parse(response.body)
         expect(body['errors']).to match(/could not be initialized/)
+        expect(body['redirect_url']).to eq('/cart')
         expect(response.status).to eq(422)
       end
     end

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 module Spree
   module SolidusSixSaferpay
-    RSpec.describe CancelReservedPayment do
+    RSpec.describe CancelAuthorizedPayment do
 
 
       let(:service) { described_class.new(payment) }

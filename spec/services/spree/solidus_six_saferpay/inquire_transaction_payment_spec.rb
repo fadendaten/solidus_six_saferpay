@@ -12,7 +12,7 @@ module Spree
       end
 
       describe '#call' do
-        let(:api_response_class) { SixSaferpay::SixTransaction::AuthorizeResponse }
+        let(:api_response_class) { SixSaferpay::SixTransaction::InquireResponse }
         it_behaves_like "inquire_payment"
       end
 

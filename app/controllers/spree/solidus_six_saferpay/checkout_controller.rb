@@ -30,7 +30,10 @@ module Spree
           redirect_url = initialized_payment.redirect_url
           render json: { redirect_url: redirect_url }
         else
-          render json: { errors: t('.checkout_not_initialized') }, status: 422
+          render json: {
+            redirect_url: spree.cart_path,
+            errors: t('.checkout_not_initialized')
+          }, status: 422
         end
       end
 

@@ -1,6 +1,6 @@
 module Spree
   module SolidusSixSaferpay
-    class CancelReservedPayment
+    class CancelAuthorizedPayment
 
       attr_reader :saferpay_payment
 
