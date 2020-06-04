@@ -42,10 +42,11 @@ module Spree
         @order = Spree::Order.find_by(number: order_number)
 
         if @order.nil?
-          handle_order_not_found(order_number)
+          OrderNotFoundHandler.call(controller_context: self, order_number: order_number)
 
           flash[:error] = t('.error_while_processing_payment')
-          @redirect_path = spree.cart_path
+          @redirect_path ||= spree.cart_path
+
           render :iframe_breakout_redirect, layout: false
           return
         end
@@ -53,10 +54,11 @@ module Spree
         saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
 
         if saferpay_payment.nil?
-          handle_payment_not_found(@order)
+          PaymentNotFoundHandler.call(controller_context: self, order: @order)
 
           flash[:error] = t('.error_while_processing_payment')
-          @redirect_path = spree.cart_path
+          @redirect_path ||= spree.cart_path
+
           render :iframe_breakout_redirect, layout: false
           return
         end
@@ -88,7 +90,7 @@ module Spree
 
           processed_authorization = process_authorization(saferpay_payment)
           if processed_authorization.success?
-            handle_payment_processing_success
+            PaymentProcessingSuccessHandler.call(controller_context: self, order: @order)
           else
             flash[:error] = processed_authorization.user_message
           end
@@ -107,10 +109,11 @@ module Spree
         @order = Spree::Order.find_by(number: order_number)
 
         if @order.nil?
-          handle_order_not_found(order_number)
+          OrderNotFoundHandler.call(controller_context: self, order_number: order_number)
 
           flash[:error] = t('.error_while_processing_payment')
-          @redirect_path = spree.cart_path
+          @redirect_path ||= spree.cart_path
+
           render :iframe_breakout_redirect, layout: false
           return
         end
@@ -118,7 +121,7 @@ module Spree
         saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
 
         if saferpay_payment.nil?
-          handle_payment_not_found(@order)
+          PaymentNotFoundHandler.call(controller_context: self, order: @order)
 
           flash[:error] = t('.error_while_processing_payment')
           @redirect_path = spree.cart_path
@@ -150,62 +153,6 @@ module Spree
 
       def inquire_payment(saferpay_payment)
         raise NotImplementedError, "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
-      end
-
-      # Allows overriding of success behaviour in host application by setting
-      # SolidusSixSaferpay.config.payment_processing_order_not_found_handler
-      # 
-      # If not overridden, it will call the configured error handler without actually raising any errors
-      #
-      # Example
-      # config.payment_processing_order_not_found_handler = Proc.new do |context, order_number|
-      #   puts "No solidus order with this number: #{order_number}!"
-      # end
-      #
-      def handle_order_not_found(order_number)
-        if order_not_found_handler = ::SolidusSixSaferpay.config.payment_processing_order_not_found_handler.presence
-          order_not_found_handler.call(self, order_number)
-        else
-        ::SolidusSixSaferpay::ErrorHandler.handle(
-          StandardError.new("No solidus order could be found for number #{order_number}"),
-          level: :error
-        )
-        end
-      end
-
-      # Allows overriding of success behaviour in host application by setting
-      # SolidusSixSaferpay.config.payment_processing_payment_not_found_handler
-      # 
-      # If not overridden, it will call the configured error handler without actually raising any errors
-      #
-      # Example
-      # config.payment_processing_payment_not_found_handler = Proc.new { |context, order| puts "No saferpay payment found for #{order}!" }
-      #
-      def handle_payment_not_found(order)
-        if payment_not_found_handler = ::SolidusSixSaferpay.config.payment_processing_payment_not_found_handler.presence
-          payment_not_found_handler.call(self, order)
-        else
-          ::SolidusSixSaferpay::ErrorHandler.handle(
-            StandardError.new("No Saferpay Payment found for order #{order.number}"),
-            level: :error
-          )
-        end
-      end
-
-      # Allows overriding of success behaviour in host application by setting
-      # SolidusSixSaferpay.config.payment_processing_success_handler
-      # 
-      # If not overridden, it will ensure that the order state is no longer "payment"
-      #
-      # Example
-      # config.payment_processing_success_handler = Proc.new { |context, order| puts "Order #{order} has been successfully paid!" }
-      #
-      def handle_payment_processing_success
-        if success_handler = ::SolidusSixSaferpay.config.payment_processing_success_handler.presence
-          success_handler.call(self, @order)
-        else
-          @order.next! if @order.payment?
-        end
       end
 
       def order_checkout_path(state)

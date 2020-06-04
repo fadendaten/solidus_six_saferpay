@@ -81,20 +81,10 @@ RSpec.shared_examples 'checkout_controller' do
       let(:order) { nil }
       let(:order_number) { "not_found" }
 
-      context 'when a custom error handler exists' do
-        let(:handler) { double("handler") }
-        let(:error_handler) { Proc.new {|context, order_number| handler.exec(order_number) } }
+      it 'calls the relevant handler service' do
+        expect(Spree::SolidusSixSaferpay::OrderNotFoundHandler).to receive(:call).with(controller_context: @controller, order_number: order_number)
 
-        before do
-          allow(::SolidusSixSaferpay.config).to receive(:payment_processing_order_not_found_handler).and_return(error_handler)
-        end
-
-        it 'calls the custom handler' do
-          expect(SolidusSixSaferpay.config.payment_processing_order_not_found_handler).to eq(error_handler)
-          expect(handler).to receive(:exec).with(order_number)
-
-          get :success, params: { order_number: order_number }
-        end
+        get :success, params: { order_number: order_number }
       end
 
       it 'redirects to the cart page via iframe breakout' do
@@ -109,20 +99,10 @@ RSpec.shared_examples 'checkout_controller' do
       # controller action
       let!(:payment) { nil }
 
-      context 'when a custom error handler exists' do
-        let(:handler) { double("handler") }
-        let(:error_handler) { Proc.new {|context, order_number| handler.exec(order_number) } }
+      it 'calls the relevant handler service' do
+        expect(Spree::SolidusSixSaferpay::PaymentNotFoundHandler).to receive(:call).with(controller_context: @controller, order: order)
 
-        before do
-          allow(::SolidusSixSaferpay.config).to receive(:payment_processing_payment_not_found_handler).and_return(error_handler)
-        end
-
-        it 'calls the custom success processing handler' do
-          expect(SolidusSixSaferpay.config.payment_processing_payment_not_found_handler).to eq(error_handler)
-          expect(handler).to receive(:exec).with(order)
-
-          get :success, params: { order_number: order_number }
-        end
+        get :success, params: { order_number: order_number }
       end
 
       it 'redirects to the cart page via iframe breakout' do
@@ -178,19 +158,10 @@ RSpec.shared_examples 'checkout_controller' do
             allow(process_authorization_service_class).to receive(:call).with(payment).and_return(processed_payment)
           end
 
-          context 'when a custom success processing handler exists' do
-            let(:success_handler) { Proc.new {|context, order| order.touch } }
+          it 'calls the custom success processing handler' do
+            expect(Spree::SolidusSixSaferpay::PaymentProcessingSuccessHandler).to receive(:call).with(controller_context: @controller, order: order)
 
-            before do
-              allow(::SolidusSixSaferpay.config).to receive(:payment_processing_success_handler).and_return(success_handler)
-            end
-
-            it 'calls the custom success processing handler' do
-              expect(SolidusSixSaferpay.config.payment_processing_success_handler).to eq(success_handler)
-              expect(order).to receive(:touch)
-
-              get :success, params: { order_number: order_number }
-            end
+            get :success, params: { order_number: order_number }
           end
 
 
@@ -260,20 +231,11 @@ RSpec.shared_examples 'checkout_controller' do
       let(:order) { nil }
       let(:order_number) { "not_found" }
 
-      context 'when a custom error handler exists' do
-        let(:handler) { double("handler") }
-        let(:error_handler) { Proc.new {|context, order_number| handler.exec(order_number) } }
 
-        before do
-          allow(::SolidusSixSaferpay.config).to receive(:payment_processing_order_not_found_handler).and_return(error_handler)
-        end
+      it 'calls the relevant handler service' do
+        expect(Spree::SolidusSixSaferpay::OrderNotFoundHandler).to receive(:call).with(controller_context: @controller, order_number: order_number)
 
-        it 'calls the custom processing handler' do
-          expect(SolidusSixSaferpay.config.payment_processing_order_not_found_handler).to eq(error_handler)
-          expect(handler).to receive(:exec).with(order_number)
-
-          get :fail, params: { order_number: order_number }
-        end
+        get :fail, params: { order_number: order_number }
       end
 
       it 'redirects to the cart page via iframe breakout' do
@@ -288,20 +250,10 @@ RSpec.shared_examples 'checkout_controller' do
       # controller action
       let!(:payment) { nil }
 
-      context 'when a custom error handler exists' do
-        let(:handler) { double("handler") }
-        let(:error_handler) { Proc.new {|context, order_number| handler.exec(order_number) } }
+      it 'calls the relevant handler service' do
+        expect(Spree::SolidusSixSaferpay::PaymentNotFoundHandler).to receive(:call).with(controller_context: @controller, order: order)
 
-        before do
-          allow(::SolidusSixSaferpay.config).to receive(:payment_processing_payment_not_found_handler).and_return(error_handler)
-        end
-
-        it 'calls the custom success processing handler' do
-          expect(SolidusSixSaferpay.config.payment_processing_payment_not_found_handler).to eq(error_handler)
-          expect(handler).to receive(:exec).with(order)
-
-          get :fail, params: { order_number: order_number }
-        end
+        get :fail, params: { order_number: order_number }
       end
 
       it 'redirects to the cart page via iframe breakout' do
