@@ -3,10 +3,10 @@
   <iframe class="saferpay-iframe" width='100%' height='550px' id="<%= payment_container_id %>" src="" frameborder="0">
   </iframe>
   <script charset="utf-8">
-    SaferpayPayment.registerIframePaymentMethod({id: "<%= payment_method.id %>", initUrl: "<%= payment_method.init_path %>", containerId: "#<%= payment_container_id %>"})
+    SaferpayPayment.registerIframePaymentMethod({id: "<%= payment_method.id %>", initUrl: "<%= payment_method.init_path(@order) %>", containerId: "#<%= payment_container_id %>"})
   </script>
 <% else %>
   <script charset="utf-8">
-    SaferpayPayment.registerExternalRedirectPaymentMethod({id: "<%= payment_method.id %>", initUrl: "<%= payment_method.init_path %>"})
+    SaferpayPayment.registerExternalRedirectPaymentMethod({id: "<%= payment_method.id %>", initUrl: "<%= payment_method.init_path(@order) %>"})
   </script>
 <% end %>

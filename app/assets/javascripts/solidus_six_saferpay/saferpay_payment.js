@@ -18,7 +18,10 @@ let SaferpayPayment = {
       },
 
       error: function(xhr) {
-        console.error(xhr.responseText);
+        // We have no other option for displaying this message, so to inform
+        // the user we must alert
+        alert(xhr.responseJSON.errors);
+        window.location.replace(xhr.responseJSON.redirect_url);
         return false;
       },
     })

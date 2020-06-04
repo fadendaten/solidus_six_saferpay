@@ -1,6 +1,5 @@
 module Spree
   module SolidusSixSaferpay
-
     class InitializePayment
 
       attr_reader :order, :payment_method, :redirect_url, :success

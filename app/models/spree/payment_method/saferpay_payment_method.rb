@@ -39,7 +39,7 @@ module Spree
       'saferpay_payment'
     end
 
-    def init_path
+    def init_path(order)
       raise NotImplementedError, "Must be implemented in SaferpayPaymentPage or SaferpayTransaction"
     end
   end

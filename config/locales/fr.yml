@@ -5,7 +5,9 @@ fr:
       checkout: &checkout
         init:
           checkout_not_initialized: Le paiement n'a pas pu être initialisé.
+          order_was_modified_after_confirmation: La commande a été modifiée après confirmation. Veuillez redémarrer le processus de paiement.
         success:
+          error_while_processing_payment: Une erreur s'est produite lors du traitement du paiement. Veuillez redémarrer le processus de paiement.
           saferpay_payment_not_found: Paiement Six Saferpay est introuvable.
         fail:
           payment_failed: Le paiement n'a pas pu être complété.
@@ -18,6 +20,7 @@ fr:
   solidus_six_saferpay:
     errors:
       liability_shift_not_granted:  Le transfert de responsabilité a été rejeté
+      saferpay_payment_not_found: Saferpay Payment est introuvable
   six_saferpay:
     error_names:
       ACTION_NOT_SUPPORTED: l'action demandé n'es pas prise en charge dans le contexte de l'action et ne peut pas être exécutée avec les données de la demande.
