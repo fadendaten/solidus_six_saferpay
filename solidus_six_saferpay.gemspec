@@ -39,4 +39,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rails-controller-testing", "~> 1.0", ">= 1.0.4"
   spec.add_development_dependency "pry", "~> 0.12"
   spec.add_development_dependency "pry-rails", "~> 0.3"
+  spec.add_development_dependency "bundler-audit"
 end
