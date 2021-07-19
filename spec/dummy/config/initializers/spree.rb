@@ -10,9 +10,6 @@ Spree.config do |config|
   # from address for transactional emails
   config.mails_from = "store@example.com"
 
-  # Use combined first and last name attribute in HTML views and API responses
-  config.use_combined_first_and_last_name_in_address = true
-
   # Uncomment to stop tracking inventory levels in the application
   # config.track_inventory_levels = false
 
@@ -25,14 +22,6 @@ Spree.config do |config|
   config.image_attachment_module = 'Spree::Image::PaperclipAttachment'
   config.taxon_attachment_module = 'Spree::Taxon::PaperclipAttachment'
 
-  # Defaults
-
-  # Set this configuration to `true` to raise an exception when
-  # an order is populated with a line item with a mismatching
-  # currency. The `false` value will just add a validation error
-  # and will be the only behavior accepted in future versions.
-  # See https://github.com/solidusio/solidus/pull/3456 for more info.
-  config.raise_with_invalid_currency = false
 
   # Permission Sets:
 

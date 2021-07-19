@@ -7,7 +7,7 @@ module SolidusSixSaferpay
     let(:error_handlers) { [] }
 
     before do
-      allow(Configuration).to receive(:error_handlers).and_return(error_handlers)
+      allow(SolidusSixSaferpay.config).to receive(:error_handlers).and_return(error_handlers)
     end
 
     describe '.handle' do

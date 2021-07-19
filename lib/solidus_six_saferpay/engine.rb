@@ -1,18 +1,13 @@
 # frozen_string_literal: true
 
-require 'spree/core'
+require 'solidus_core'
+require 'solidus_support'
+
+require 'six_saferpay'
+
 module SolidusSixSaferpay
-
-  def self.config
-    @config ||= Configuration.new
-  end
-
-  def self.configure
-    yield config
-  end
-
   class Engine < Rails::Engine
-    include SolidusSupport::EngineExtensions::Decorators
+    include SolidusSupport::EngineExtensions
 
     isolate_namespace ::Spree
 
