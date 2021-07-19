@@ -35,7 +35,9 @@ module Spree
 
       def gateway
         raise NotImplementedError,
-          "Must be implemented in InitializePaymentPage or InitializeTransaction by including UsePaymentPageGateway or UseTransactionGateway"
+          "Must be implemented in InitializePaymentPage or" \
+          "InitializeTransaction by including UsePaymentPageGateway or" \
+          "UseTransactionGateway"
       end
 
       private

@@ -15,7 +15,7 @@ module Spree
 
       def call
         if transaction_id = saferpay_payment.transaction_id
-          gateway.void(saferpay_payment.transaction_id)
+          gateway.void(transaction_id)
         else
           ::SolidusSixSaferpay::ErrorHandler.handle(
             ::SolidusSixSaferpay::InvalidSaferpayPayment.new(

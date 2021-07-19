@@ -40,14 +40,14 @@ module Spree
 
       def gateway
         raise NotImplementedError,
-          "Must be implemented in AssertPaymentPage or AuthorizeTransaction with UsePaymentPageGateway or UseTransactionGateway"
+          "Must be implemented in AssertPaymentPage or AuthorizeTransaction" \
+          "with UsePaymentPageGateway or UseTransactionGateway"
       end
 
       private
 
       def saferpay_payment_attributes(saferpay_response)
         payment_means = saferpay_response.payment_means
-        brand = payment_means.brand
         card = payment_means.card
 
         attributes = {

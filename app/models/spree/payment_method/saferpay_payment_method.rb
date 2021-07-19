@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Spree
-  class PaymentMethod::SaferpayPaymentMethod < PaymentMethod::CreditCard
+  class PaymentMethod::SaferpayPaymentMethod < PaymentMethod::CreditCard # rubocop:disable Style/ClassAndModuleChildren
     include RouteAccess
 
     AVAILABLE_PAYMENT_METHODS = %w(ALIPAY AMEX BANCONTACT BONUS DINERS

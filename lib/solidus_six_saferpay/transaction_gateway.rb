@@ -3,7 +3,9 @@
 module SolidusSixSaferpay
   class TransactionGateway < Gateway
     def inquire(saferpay_payment, _options = {})
-      transaction_inquire = SixSaferpay::SixTransaction::Inquire.new(transaction_reference: saferpay_payment.transaction_id)
+      transaction_inquire =
+        SixSaferpay::SixTransaction::Inquire.new(transaction_reference:
+                                                 saferpay_payment.transaction_id)
       inquire_response = SixSaferpay::Client.post(transaction_inquire)
 
       response(

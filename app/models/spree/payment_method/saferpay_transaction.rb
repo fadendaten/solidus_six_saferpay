@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Spree
-  class PaymentMethod::SaferpayTransaction < PaymentMethod::SaferpayPaymentMethod
+  class PaymentMethod::SaferpayTransaction < PaymentMethod::SaferpayPaymentMethod # rubocop:disable Style/ClassAndModuleChildren
     def gateway_class
       ::SolidusSixSaferpay::TransactionGateway
     end

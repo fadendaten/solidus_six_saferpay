@@ -9,7 +9,9 @@ module SolidusSixSaferpay
 
       SolidusSixSaferpay.config.error_handlers.each do |handler|
         if !handler.respond_to?(:call)
-          Rails.logger.warn("SolidusSixSaferpay::Configuration ERROR: The attached error handler #{handler} can not be called with #{handler}.call(error, level: level)")
+          Rails.logger.warn("SolidusSixSaferpay::Configuration ERROR: The" \
+                            "attached error handler #{handler} can not be called" \
+                            "with #{handler}.call(error, level: level)")
 
           # skip to next handler
           next

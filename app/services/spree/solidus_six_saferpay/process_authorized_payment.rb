@@ -50,9 +50,9 @@ module Spree
 
       # Cancels only the saferpay payment without affecting solidus
       def cancel_saferpay_payment
-        if transaction_id = saferpay_payment.transaction_id
-          gateway.void(transaction_id)
-        end
+        return unless transaction_id = saferpay_payment.transaction_id
+
+        gateway.void(transaction_id)
       end
 
       # Cancels the solidus payments which automatically cancels the saferpay
@@ -62,7 +62,7 @@ module Spree
       end
 
       def check_liability_shift_requirements!
-        if require_liability_shift? && !liability_shifted?
+        if require_liability_shift? && !liability_shifted? # rucocop:disable Style/GuardClause
           raise ::SolidusSixSaferpay::InvalidSaferpayPayment.new(details: I18n.t(:liability_shift_not_granted,
             scope: [:solidus_six_saferpay, :errors]))
         end

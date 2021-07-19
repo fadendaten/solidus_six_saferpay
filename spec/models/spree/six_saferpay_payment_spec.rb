@@ -16,7 +16,6 @@ module Spree
 
     describe "#create_solidus_payment!" do
       it 'creates a Solidus::Payment with the correct information' do
-        expect(Spree::Payment.count).to eq(0)
         solidus_payment = payment.create_solidus_payment!
         expect(Spree::Payment.count).to eq(1)
         expect(solidus_payment.order).to eq(payment.order)
