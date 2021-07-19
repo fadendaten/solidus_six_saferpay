@@ -2,12 +2,12 @@ require 'rails_helper'
 
 module SolidusSixSaferpay
   RSpec.describe GatewayResponse do
+    subject { described_class.new(success, message, api_response, options) }
+
     let(:success) { true }
     let(:message) { double('message') }
     let(:api_response) { double('API response') }
     let(:options) { {} }
-
-    subject { described_class.new(success, message, api_response, options) }
 
     describe '#initialize' do
       let(:error_name) { double("error_name") }
@@ -27,7 +27,6 @@ module SolidusSixSaferpay
         it 'sets the authorization' do
           expect(subject.authorization).to eq(authorization)
         end
-        
       end
     end
 
@@ -56,13 +55,13 @@ module SolidusSixSaferpay
     end
 
     describe '#avs_result' do
-      it 'should be an empty hash' do
+      it 'is an empty hash' do
         expect(subject.avs_result).to eq({})
       end
     end
 
     describe '#cvv_result' do
-      it 'should be nil' do
+      it 'is nil' do
         expect(subject.cvv_result).to be_nil
       end
     end

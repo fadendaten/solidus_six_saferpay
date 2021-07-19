@@ -1,5 +1,6 @@
-module Spree
+# frozen_string_literal: true
 
+module Spree
   # attributes
   # * :token
   # * :expiration
@@ -23,7 +24,8 @@ module Spree
     validates :token, :transaction_id, :six_transaction_reference, uniqueness: true, allow_blank: true
 
     def create_solidus_payment!
-      payments.create!(order: order, response_code: transaction_id, payment_method: payment_method, amount: order.total, source: self)
+      payments.create!(order: order, response_code: transaction_id, payment_method: payment_method,
+        amount: order.total, source: self)
     end
 
     def address
@@ -32,27 +34,21 @@ module Spree
 
     # This memoization only works if response_payment_means is not nil.
     def payment_means
-      @payment_means ||= begin
-         if payment_means_response = response_hash[:payment_means]
-           ::SixSaferpay::ResponsePaymentMeans.new(payment_means_response)
-         end
-       end
+      @payment_means ||= if payment_means_response = response_hash[:payment_means]
+                           ::SixSaferpay::ResponsePaymentMeans.new(payment_means_response)
+                         end
     end
 
     def transaction
-      @transaction ||= begin
-         if transaction_response = response_hash[:transaction]
-           ::SixSaferpay::Transaction.new(transaction_response)
-         end
-       end
+      @transaction ||= if transaction_response = response_hash[:transaction]
+                         ::SixSaferpay::Transaction.new(transaction_response)
+                       end
     end
 
     def liability
-      @liability ||= begin
-         if liability_response = response_hash[:liability]
-           ::SixSaferpay::Liability.new(liability_response)
-         end
-       end
+      @liability ||= if liability_response = response_hash[:liability]
+                       ::SixSaferpay::Liability.new(liability_response)
+                     end
     end
 
     def card

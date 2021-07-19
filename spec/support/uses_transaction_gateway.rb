@@ -1,5 +1,4 @@
 RSpec.shared_examples "it uses the transaction gateway" do
-
   it_behaves_like "it has route access"
 
   describe '#gateway' do
@@ -18,11 +17,9 @@ RSpec.shared_examples "it uses the transaction gateway" do
         allow(ENV).to receive(:fetch).with("SIX_SAFERPAY_CSS_URL").and_return("css_url")
       end
 
-      it 'should return a TransactionGateway' do
+      it 'returns a TransactionGateway' do
         expect(subject.gateway).to be_a(::SolidusSixSaferpay::TransactionGateway)
       end
-
     end
   end
 end
-

@@ -3,8 +3,6 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe CancelAuthorizedPayment do
-
-
       let(:service) { described_class.new(payment) }
 
       describe '.call' do
@@ -49,10 +47,8 @@ module Spree
 
             service.call
           end
-
         end
       end
-
     end
   end
 end

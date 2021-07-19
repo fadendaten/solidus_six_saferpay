@@ -22,7 +22,6 @@ module SolidusSixSaferpay
     end
 
     describe '#new' do
-      
       it 'configures the API client' do
         gateway = described_class.new(
           customer_id: customer_id,
@@ -44,7 +43,6 @@ module SolidusSixSaferpay
       end
 
       context 'when global options are not passed' do
-
         before do
           allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_CUSTOMER_ID').and_return(customer_id)
           allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_TERMINAL_ID').and_return(terminal_id)
@@ -53,7 +51,7 @@ module SolidusSixSaferpay
           allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_BASE_URL').and_return(base_url)
           allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_CSS_URL').and_return(css_url)
         end
-        
+
         it 'falls back to ENV vars' do
           gateway = described_class.new
 
@@ -70,7 +68,6 @@ module SolidusSixSaferpay
     end
 
     describe '#initialize_payment' do
-
       let(:order) { create(:order) }
       let(:payment_method) { create(:saferpay_payment_method) }
 
@@ -80,7 +77,6 @@ module SolidusSixSaferpay
     end
 
     describe '#authorize' do
-
       let(:payment) { create(:six_saferpay_payment) }
       let(:amount) { payment.order.total }
 
@@ -90,7 +86,6 @@ module SolidusSixSaferpay
     end
 
     describe '#inquire' do
-
       let(:payment) { create(:six_saferpay_payment) }
 
       it 'fails because inquire must be defined in a subclass' do
@@ -107,7 +102,6 @@ module SolidusSixSaferpay
 
         gateway.purchase(amount, payment)
       end
-      
     end
 
     describe '#capture' do
@@ -123,7 +117,9 @@ module SolidusSixSaferpay
         )
       end
 
-      let(:transaction_reference) { instance_double("SixSaferpay::TransactionReference", transaction_id: transaction_id) }
+      let(:transaction_reference) {
+        instance_double("SixSaferpay::TransactionReference", transaction_id: transaction_id)
+      }
       let(:saferpay_capture) { instance_double("SixSaferpay::SixTransaction::Capture") }
 
       it 'captures the given transaction via the Saferpay API' do
@@ -140,7 +136,8 @@ module SolidusSixSaferpay
         end
 
         it 'returns a success gateway response' do
-          expect(GatewayResponse).to receive(:new).with(true, instance_of(String), api_capture_response, { authorization: api_capture_response.capture_id } )
+          expect(GatewayResponse).to receive(:new).with(true, instance_of(String), api_capture_response,
+            { authorization: api_capture_response.capture_id } )
 
           gateway.capture(amount, transaction_id)
         end
@@ -161,7 +158,8 @@ module SolidusSixSaferpay
         end
 
         it 'handles the error gracefully' do
-          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil, error_name: six_saferpay_error.error_name)
+          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil,
+            error_name: six_saferpay_error.error_name)
 
           gateway.capture(amount, transaction_id)
         end
@@ -216,7 +214,8 @@ module SolidusSixSaferpay
         end
 
         it 'handles the error gracefully' do
-          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil, error_name: six_saferpay_error.error_name)
+          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil,
+            error_name: six_saferpay_error.error_name)
 
           gateway.void(transaction_id)
         end
@@ -239,7 +238,7 @@ module SolidusSixSaferpay
     describe '#credit' do
       let(:amount) { 400 }
       let(:transaction_id) { 'TRANSACTION_ID' }
-      let(:options) { {a: 'a', b: 'b'} }
+      let(:options) { { a: 'a', b: 'b' } }
 
       it 'is aliased to #refund' do
         expect(gateway).to receive(:refund).with(amount, transaction_id, options)
@@ -293,7 +292,8 @@ module SolidusSixSaferpay
       end
 
       it 'refunds and directly captures the payment' do
-        expect(SixSaferpay::SixTransaction::Refund).to receive(:new).with(refund: instance_of(SixSaferpay::Refund), capture_reference: instance_of(SixSaferpay::CaptureReference)).and_return(saferpay_refund)
+        expect(SixSaferpay::SixTransaction::Refund).to receive(:new).with(refund: instance_of(SixSaferpay::Refund),
+          capture_reference: instance_of(SixSaferpay::CaptureReference)).and_return(saferpay_refund)
 
         expect(SixSaferpay::Client).to receive(:post).with(saferpay_refund).and_return(api_refund_response)
 
@@ -318,7 +318,8 @@ module SolidusSixSaferpay
         end
 
         it 'returns a success gateway response' do
-          expect(GatewayResponse).to receive(:new).with(true, instance_of(String), api_capture_response, { authorization: 'CAPTURE_ID' })
+          expect(GatewayResponse).to receive(:new).with(true, instance_of(String), api_capture_response,
+            { authorization: 'CAPTURE_ID' })
 
           gateway.refund(refund_amount, transaction_id)
         end
@@ -340,7 +341,8 @@ module SolidusSixSaferpay
           end
 
           it 'handles the error gracefully' do
-            expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil, error_name: six_saferpay_error.error_name)
+            expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil,
+              error_name: six_saferpay_error.error_name)
 
             gateway.refund(refund_amount, transaction_id)
           end
@@ -353,12 +355,12 @@ module SolidusSixSaferpay
           end
 
           it 'handles the error gracefully' do
-            expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil, error_name: six_saferpay_error.error_name)
+            expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil,
+              error_name: six_saferpay_error.error_name)
 
             gateway.refund(refund_amount, transaction_id)
           end
         end
-        
       end
     end
   end

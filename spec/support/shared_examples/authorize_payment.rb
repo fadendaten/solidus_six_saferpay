@@ -1,5 +1,4 @@
 RSpec.shared_examples 'authorize_payment' do
-
   let(:transaction_status) { "AUTHORIZED" }
   let(:transaction_id) { "723n4MAjMdhjSAhAKEUdA8jtl9jb" }
   let(:transaction_date) { "2015-01-30T12:45:22.258+01:00" }
@@ -57,12 +56,12 @@ RSpec.shared_examples 'authorize_payment' do
     end
 
     it 'does not update the payment attributes' do
-      expect { subject.call }.not_to change { payment.transaction_id }
-      expect { subject.call }.not_to change { payment.transaction_status }
-      expect { subject.call }.not_to change { payment.transaction_date }
-      expect { subject.call }.not_to change { payment.six_transaction_reference }
-      expect { subject.call }.not_to change { payment.display_text }
-      expect { subject.call }.not_to change { payment.response_hash }
+      expect { subject.call }.not_to change(payment, :transaction_id)
+      expect { subject.call }.not_to change(payment, :transaction_status)
+      expect { subject.call }.not_to change(payment, :transaction_date)
+      expect { subject.call }.not_to change(payment, :six_transaction_reference)
+      expect { subject.call }.not_to change(payment, :display_text)
+      expect { subject.call }.not_to change(payment, :response_hash)
     end
   end
 
@@ -70,27 +69,27 @@ RSpec.shared_examples 'authorize_payment' do
     let(:gateway_success) { true }
 
     it 'updates the transaction_id' do
-      expect { subject.call }.to change { payment.transaction_id }.from(nil).to(transaction_id)
+      expect { subject.call }.to change(payment, :transaction_id).from(nil).to(transaction_id)
     end
 
     it 'updates the transaction status' do
-      expect { subject.call }.to change { payment.transaction_status }.from(nil).to(transaction_status)
+      expect { subject.call }.to change(payment, :transaction_status).from(nil).to(transaction_status)
     end
 
     it 'updates the transaction date' do
-      expect { subject.call }.to change { payment.transaction_date }.from(nil).to(DateTime.parse(transaction_date))
+      expect { subject.call }.to change(payment, :transaction_date).from(nil).to(DateTime.parse(transaction_date))
     end
 
     it 'updates the six_transaction_reference' do
-      expect { subject.call }.to change { payment.six_transaction_reference }.from(nil).to(six_transaction_reference)
+      expect { subject.call }.to change(payment, :six_transaction_reference).from(nil).to(six_transaction_reference)
     end
 
     it 'updates the display_text' do
-      expect { subject.call }.to change { payment.display_text }.from(nil).to(display_text)
+      expect { subject.call }.to change(payment, :display_text).from(nil).to(display_text)
     end
 
     it 'updates the response hash' do
-      expect { subject.call }.to change { payment.response_hash }.from(payment.response_hash).to(api_response.to_h)
+      expect { subject.call }.to change(payment, :response_hash).from(payment.response_hash).to(api_response.to_h)
     end
 
     context 'when the payment was made with a card' do
@@ -110,15 +109,15 @@ RSpec.shared_examples 'authorize_payment' do
       end
 
       it 'updates the masked number' do
-        expect { subject.call }.to change { payment.masked_number }.from(nil).to(masked_number)
+        expect { subject.call }.to change(payment, :masked_number).from(nil).to(masked_number)
       end
 
       it 'updates the expiry year' do
-        expect { subject.call }.to change { payment.expiration_year }.from(nil).to(exp_year)
+        expect { subject.call }.to change(payment, :expiration_year).from(nil).to(exp_year)
       end
 
       it 'updates the expiry month' do
-        expect { subject.call }.to change { payment.expiration_month }.from(nil).to(exp_month)
+        expect { subject.call }.to change(payment, :expiration_month).from(nil).to(exp_month)
       end
     end
 
@@ -128,5 +127,4 @@ RSpec.shared_examples 'authorize_payment' do
       expect(subject).to be_success
     end
   end
-
 end

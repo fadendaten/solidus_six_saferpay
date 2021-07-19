@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spree
   module SolidusSixSaferpay
     class AuthorizePayment
@@ -16,7 +18,7 @@ module Spree
         authorization = gateway.authorize(order.total, saferpay_payment)
 
         if authorization.success?
-          saferpay_payment.update_attributes!(saferpay_payment_attributes(authorization.api_response))
+          saferpay_payment.update!(saferpay_payment_attributes(authorization.api_response))
           @success = true
         end
         self
@@ -26,9 +28,9 @@ module Spree
         @success
       end
 
-
       def gateway
-        raise NotImplementedError, "Must be implemented in AssertPaymentPage or AuthorizeTransaction with UsePaymentPageGateway or UseTransactionGateway"
+        raise NotImplementedError,
+          "Must be implemented in AssertPaymentPage or AuthorizeTransaction with UsePaymentPageGateway or UseTransactionGateway"
       end
 
       private

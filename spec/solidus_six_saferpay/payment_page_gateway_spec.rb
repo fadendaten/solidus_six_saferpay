@@ -2,7 +2,6 @@ require 'rails_helper'
 
 module SolidusSixSaferpay
   RSpec.describe PaymentPageGateway do
-
     # config options
     let(:customer_id) { 'CUSTOMER_ID' }
     let(:terminal_id) { 'TERMINAL_ID' }
@@ -37,7 +36,6 @@ module SolidusSixSaferpay
     end
 
     describe '#initialize_payment' do
-
       let(:saferpay_billing_address) do
         instance_double("SixSaferpay::Address",
           first_name: order.billing_address.first_name,
@@ -53,8 +51,7 @@ module SolidusSixSaferpay
           country_subdevision_code: nil,
           country_code: order.billing_address.country.iso,
           phone: nil,
-          email: nil,
-        )
+          email: nil,)
       end
 
       let(:saferpay_shipping_address) do
@@ -72,38 +69,33 @@ module SolidusSixSaferpay
           country_subdevision_code: nil,
           country_code: order.shipping_address.country.iso,
           phone: nil,
-          email: nil,
-        )
+          email: nil,)
       end
 
       let(:saferpay_amount) do
         instance_double("SixSaferpay::Amount",
-            value: (order.total * 100),
-            currency_code: order.currency
-          )
+          value: (order.total * 100),
+          currency_code: order.currency)
       end
 
       let(:saferpay_payment) do
         instance_double("SixSaferpay::Payment",
           amount: saferpay_amount,
           order_id: order.number,
-          description: order.number
-        )
+          description: order.number)
       end
 
       let(:saferpay_payer) do
         instance_double("SixSaferpay::Payer",
           language_code: I18n.locale,
           billing_address: saferpay_billing_address,
-          delivery_address: saferpay_shipping_address
-        )
+          delivery_address: saferpay_shipping_address)
       end
       let(:return_urls) do
         instance_double("SixSaferpay::ReturnUrls",
           success: solidus_six_saferpay_payment_page_success_url(order),
           fd_fail: solidus_six_saferpay_payment_page_fail_url(order),
-          fd_abort: solidus_six_saferpay_payment_page_fail_url(order),
-         )
+          fd_abort: solidus_six_saferpay_payment_page_fail_url(order),)
       end
 
       let(:initialize_params) do
@@ -127,7 +119,6 @@ module SolidusSixSaferpay
         )
       end
 
-
       it 'initializes a payment page payment' do
         # mock payment
         expect(SixSaferpay::Amount).to receive(:new).with(
@@ -139,7 +130,6 @@ module SolidusSixSaferpay
           order_id: order.number,
           description: order.number
         ).and_return(saferpay_payment)
-
 
         # mock payer
         expect(SixSaferpay::Address).to receive(:new).with(
@@ -220,7 +210,8 @@ module SolidusSixSaferpay
         end
 
         it 'handles the error gracefully' do
-          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil, error_name: six_saferpay_error.error_name)
+          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil,
+            error_name: six_saferpay_error.error_name)
 
           gateway.initialize_payment(order, payment_method)
         end
@@ -228,7 +219,6 @@ module SolidusSixSaferpay
     end
 
     describe '#inquire' do
-
       let(:saferpay_assert) do
         instance_double("SixSaferpay::PaymentPage::Assert")
       end
@@ -298,7 +288,8 @@ module SolidusSixSaferpay
         end
 
         it 'handles the error gracefully' do
-          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil, error_name: six_saferpay_error.error_name)
+          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil,
+            error_name: six_saferpay_error.error_name)
 
           gateway.inquire(payment)
         end
@@ -347,7 +338,7 @@ module SolidusSixSaferpay
           payment_means: payment_means
         )
       end
-      
+
       it 'performs an assert request' do
         expect(SixSaferpay::SixPaymentPage::Assert).to receive(:new).with(token: payment.token).and_return(saferpay_assert)
         expect(SixSaferpay::Client).to receive(:post).and_return(api_assert_response)
@@ -382,7 +373,8 @@ module SolidusSixSaferpay
         end
 
         it 'handles the error gracefully' do
-          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil, error_name: six_saferpay_error.error_name)
+          expect(GatewayResponse).to receive(:new).with(false, six_saferpay_error.error_message, nil,
+            error_name: six_saferpay_error.error_name)
 
           gateway.assert(payment)
         end

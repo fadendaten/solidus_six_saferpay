@@ -16,7 +16,7 @@ module SolidusSixSaferpay
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
     config.eager_load_paths += Dir["#{config.root}/lib/**/"]
 
-    initializer "spree.six_payment.payment_methods", :after => "spree.register.payment_methods" do |app|
+    initializer "spree.six_payment.payment_methods", after: "spree.register.payment_methods" do |app|
       app.config.spree.payment_methods << Spree::PaymentMethod::SaferpayPaymentPage
       app.config.spree.payment_methods << Spree::PaymentMethod::SaferpayTransaction
     end

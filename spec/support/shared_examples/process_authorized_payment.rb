@@ -4,7 +4,6 @@ RSpec.shared_examples 'process_authorized_payment' do
   end
 
   context 'liability_shift check' do
-
     before do
       # ensure other methods don't modify outcome
       allow(subject).to receive(:validate_payment!)
@@ -14,7 +13,6 @@ RSpec.shared_examples 'process_authorized_payment' do
 
     context 'when liability shift is required' do
       context 'and liability shift is not granted' do
-
         let(:payment) { create(:six_saferpay_payment, :authorized, :without_liability_shift) }
 
         it 'cancels the payment' do
@@ -36,7 +34,6 @@ RSpec.shared_examples 'process_authorized_payment' do
 
           expect(subject).not_to be_success
         end
-
       end
 
       context 'and liability shift is granted' do
@@ -64,7 +61,9 @@ RSpec.shared_examples 'process_authorized_payment' do
       let(:payment_method) { create(:saferpay_payment_method, :no_require_liability_shift) }
 
       context 'and liability shift is not granted' do
-        let(:payment) { create(:six_saferpay_payment, :authorized, :without_liability_shift, payment_method: payment_method) }
+        let(:payment) {
+          create(:six_saferpay_payment, :authorized, :without_liability_shift, payment_method: payment_method)
+        }
 
         it "doesn't cancel the payment" do
           expect(payment.payment_method.preferred_require_liability_shift).to be false
@@ -86,6 +85,7 @@ RSpec.shared_examples 'process_authorized_payment' do
 
       context 'and liability shift is granted' do
         let(:payment) { create(:six_saferpay_payment, :authorized, payment_method: payment_method) }
+
         it "doesn't cancel the payment" do
           expect(payment.payment_method.preferred_require_liability_shift).to be false
           expect(payment.liability.liability_shift).to be true
@@ -109,7 +109,6 @@ RSpec.shared_examples 'process_authorized_payment' do
   context 'payment validation' do
     before do
       allow(subject).to receive(:gateway).and_return(double('gateway'))
-
 
       # ensure other methods don't modify outcome
       allow(subject).to receive(:check_liability_shift_requirements!)

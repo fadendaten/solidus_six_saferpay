@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Spree
   module SolidusSixSaferpay
     class CheckoutController < StoreController
-
       def init
         order_number = params[:order_number]
         @order = Spree::Order.find_by(number: order_number)
@@ -19,7 +20,7 @@ module Spree
           render json: {
             redirect_url: spree.cart_path,
             errors: t('.order_was_modified_after_confirmation')
-          }, status: 422
+          }, status: :unprocessable_entity
           return
         end
 
@@ -33,7 +34,7 @@ module Spree
           render json: {
             redirect_url: spree.cart_path,
             errors: t('.checkout_not_initialized')
-          }, status: 422
+          }, status: :unprocessable_entity
         end
       end
 
@@ -73,7 +74,6 @@ module Spree
           render :iframe_breakout_redirect, layout: false
           return
         end
-
 
         # NOTE: PaymentPage payments are authorized directly. Instead, we
         # perform an ASSERT here to gather the necessary details.
@@ -129,7 +129,6 @@ module Spree
           return
         end
 
-
         payment_inquiry = inquire_payment(saferpay_payment)
         flash[:error] = payment_inquiry.user_message
 
@@ -139,20 +138,24 @@ module Spree
 
       private
 
-      def initialize_payment(order, payment_method)
-        raise NotImplementedError, "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
+      def initialize_payment(_order, _payment_method)
+        raise NotImplementedError,
+          "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
       end
 
-      def authorize_payment(saferpay_payment)
-        raise NotImplementedError, "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
+      def authorize_payment(_saferpay_payment)
+        raise NotImplementedError,
+          "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
       end
 
-      def process_authorization(saferpay_payment)
-        raise NotImplementedError, "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
+      def process_authorization(_saferpay_payment)
+        raise NotImplementedError,
+          "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
       end
 
-      def inquire_payment(saferpay_payment)
-        raise NotImplementedError, "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
+      def inquire_payment(_saferpay_payment)
+        raise NotImplementedError,
+          "Must be implemented in PaymentPageCheckoutController or TransactionCheckoutController"
       end
 
       def order_checkout_path(state)

@@ -1,5 +1,6 @@
-module SolidusSixSaferpay
+# frozen_string_literal: true
 
+module SolidusSixSaferpay
   class ErrorHandler
     # Use a custom error handler so that host applications can configure their
     # error handling
@@ -18,4 +19,3 @@ module SolidusSixSaferpay
     end
   end
 end
-

@@ -7,7 +7,7 @@ module SolidusSixSaferpay
     attr_accessor :error_handlers
 
     def initialize
-      @error_handlers ||= []
+      @error_handlers = []
     end
   end
 

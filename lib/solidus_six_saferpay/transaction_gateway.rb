@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module SolidusSixSaferpay
   class TransactionGateway < Gateway
-
-    def inquire(saferpay_payment, options = {})
+    def inquire(saferpay_payment, _options = {})
       transaction_inquire = SixSaferpay::SixTransaction::Inquire.new(transaction_reference: saferpay_payment.transaction_id)
       inquire_response = SixSaferpay::Client.post(transaction_inquire)
 
@@ -16,7 +17,7 @@ module SolidusSixSaferpay
 
     # NOTE: Saferpay does not allow authorization for partial amounts.
     # Therefore, the given amount is ignored
-    def authorize(_amount, saferpay_payment, options = {})
+    def authorize(_amount, saferpay_payment, _options = {})
       transaction_authorize = SixSaferpay::SixTransaction::Authorize.new(token: saferpay_payment.token)
       authorize_response = SixSaferpay::Client.post(transaction_authorize)
 

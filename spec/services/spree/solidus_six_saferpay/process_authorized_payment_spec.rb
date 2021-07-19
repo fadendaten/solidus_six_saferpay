@@ -3,7 +3,6 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe ProcessAuthorizedPayment do
-
       let(:payment) { create(:six_saferpay_payment, :authorized) }
 
       let(:service) { described_class.new(payment) }

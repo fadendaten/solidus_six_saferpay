@@ -3,7 +3,6 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe PaymentValidator do
-
       let(:payment) { create(:six_saferpay_payment, :authorized) }
 
       let(:service) { described_class.new(payment) }
@@ -38,15 +37,21 @@ module Spree
 
         context 'when the saferpay status is CAPTURED' do
           let(:saferpay_transaction) { instance_double("SixSaferpay::Transaction", status: "CAPTURED") }
+
           it 'raises an error' do
-            expect{ service.validate_payment_authorized(saferpay_transaction) }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
+            expect{
+              service.validate_payment_authorized(saferpay_transaction)
+            }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
           end
         end
 
         context 'when the saferpay status is PENDING' do
           let(:saferpay_transaction) { instance_double("SixSaferpay::Transaction", status: "PENDING") }
+
           it 'raises an error' do
-            expect{ service.validate_payment_authorized(saferpay_transaction) }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
+            expect{
+              service.validate_payment_authorized(saferpay_transaction)
+            }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
           end
         end
       end
@@ -64,15 +69,21 @@ module Spree
           let(:saferpay_transaction) { instance_double("SixSaferpay::Transaction", order_id: "OTHER") }
 
           it 'raises an error' do
-            expect{ service.validate_order_reference(saferpay_transaction) }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
+            expect{
+              service.validate_order_reference(saferpay_transaction)
+            }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
           end
         end
       end
 
       describe '#validate_order_amount' do
-          let(:saferpay_transaction) { instance_double("SixSaferpay::Transaction", amount: saferpay_amount) }
+        let(:saferpay_transaction) { instance_double("SixSaferpay::Transaction", amount: saferpay_amount) }
+
         context 'when the saferpay payment values match the solidus order values' do
-          let(:saferpay_amount) { instance_double("SixSaferpay::Amount", value: (payment.order.amount * 100).to_s, currency_code: payment.order.currency) }
+          let(:saferpay_amount) {
+            instance_double("SixSaferpay::Amount", value: (payment.order.amount * 100).to_s,
+           currency_code: payment.order.currency)
+          }
 
           it 'passes validation' do
             expect(service.validate_order_amount(saferpay_transaction)).to be true
@@ -80,18 +91,27 @@ module Spree
         end
 
         context 'when the saferpay payment currency does not match the solidus order currency' do
-          let(:saferpay_amount) { instance_double("SixSaferpay::Amount", value: (payment.order.amount * 100).to_s, currency_code: "OTHER") }
-          
+          let(:saferpay_amount) {
+            instance_double("SixSaferpay::Amount", value: (payment.order.amount * 100).to_s, currency_code: "OTHER")
+          }
+
           it 'raises an error' do
-            expect{ service.validate_order_amount(saferpay_transaction) }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
+            expect{
+              service.validate_order_amount(saferpay_transaction)
+            }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
           end
         end
 
         context 'when the saferpay payment value does not match the solidus order value' do
-          let(:saferpay_amount) { instance_double("SixSaferpay::Amount", value: ((payment.order.amount + 5) * 100).to_s, currency_code: payment.order.currency) }
-          
+          let(:saferpay_amount) {
+            instance_double("SixSaferpay::Amount", value: ((payment.order.amount + 5) * 100).to_s,
+           currency_code: payment.order.currency)
+          }
+
           it 'raises an error' do
-            expect{ service.validate_order_amount(saferpay_transaction) }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
+            expect{
+              service.validate_order_amount(saferpay_transaction)
+            }.to raise_error(::SolidusSixSaferpay::InvalidSaferpayPayment)
           end
         end
       end

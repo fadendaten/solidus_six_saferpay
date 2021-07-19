@@ -1,8 +1,13 @@
+# frozen_string_literal: true
+
 module Spree
   class PaymentMethod::SaferpayPaymentMethod < PaymentMethod::CreditCard
     include RouteAccess
 
-    AVAILABLE_PAYMENT_METHODS = %w(ALIPAY AMEX BANCONTACT BONUS DINERS DIRECTDEBIT EPRZELEWY EPS GIROPAY IDEAL INVOICE JCB MAESTRO MASTERCARD MYONE PAYPAL PAYDIREKT POSTCARD POSTFINANCE SAFERPAYTEST SOFORT TWINT UNIONPAY VISA VPAY)
+    AVAILABLE_PAYMENT_METHODS = %w(ALIPAY AMEX BANCONTACT BONUS DINERS
+    DIRECTDEBIT EPRZELEWY EPS GIROPAY IDEAL INVOICE JCB MAESTRO MASTERCARD
+    MYONE PAYPAL PAYDIREKT POSTCARD POSTFINANCE SAFERPAYTEST SOFORT TWINT
+    UNIONPAY VISA VPAY).freeze
 
     delegate :try_void, to: :gateway
 
@@ -39,7 +44,7 @@ module Spree
       'saferpay_payment'
     end
 
-    def init_path(order)
+    def init_path(_order)
       raise NotImplementedError, "Must be implemented in SaferpayPaymentPage or SaferpayTransaction"
     end
   end

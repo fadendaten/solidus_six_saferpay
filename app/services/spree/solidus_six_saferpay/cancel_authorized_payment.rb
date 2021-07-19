@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Spree
   module SolidusSixSaferpay
     class CancelAuthorizedPayment
-
       attr_reader :saferpay_payment
 
       def self.call(saferpay_payment)
@@ -18,7 +19,8 @@ module Spree
         else
           ::SolidusSixSaferpay::ErrorHandler.handle(
             ::SolidusSixSaferpay::InvalidSaferpayPayment.new(
-              details: "Can not cancel payment #{saferpay_payment.id} because it has no transaction ID.")
+              details: "Can not cancel payment #{saferpay_payment.id} because it has no transaction ID."
+            )
           )
         end
       end

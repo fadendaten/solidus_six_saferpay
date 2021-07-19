@@ -2,7 +2,6 @@ require 'rails_helper'
 
 module SolidusSixSaferpay
   RSpec.describe ErrorHandler do
-
     let(:error) { StandardError.new }
     let(:error_handlers) { [] }
 
@@ -11,7 +10,6 @@ module SolidusSixSaferpay
     end
 
     describe '.handle' do
-
       it 'defaults to level :error' do
         expect(Rails.logger).to receive(:error).with(error)
         described_class.handle(error)

@@ -3,12 +3,10 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe InitializeTransaction do
+      subject { described_class.new(order, payment_method) }
 
       let(:order) { create(:order) }
       let(:payment_method) { create(:saferpay_payment_method) }
-
-      subject { described_class.new(order, payment_method) }
-
 
       describe '#gateway' do
         it_behaves_like "it uses the transaction gateway"
@@ -26,11 +24,11 @@ module Spree
             token: token,
             expiration: expiration,
             liability_shift: nil, # this is empty because we don't submit PaymentMeans on initialize already
-            redirect_required: true, 
+            redirect_required: true,
             redirect: SixSaferpay::Redirect.new(redirect_url: redirect_url, payment_means_required: true) # since we don't provide PaymentMeans on initialize, we must always redirect
           )
         end
-        
+
         let(:gateway_response) do
           ::SolidusSixSaferpay::GatewayResponse.new(
             gateway_success,
@@ -78,7 +76,6 @@ module Spree
           end
         end
       end
-
     end
   end
 end

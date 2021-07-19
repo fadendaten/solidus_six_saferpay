@@ -1,5 +1,6 @@
-module SolidusSixSaferpay
+# frozen_string_literal: true
 
+module SolidusSixSaferpay
   class GatewayResponse
     attr_reader :api_response, :message, :test, :error_name, :authorization
 

@@ -1,6 +1,5 @@
 FactoryBot.define do
-
-  factory :saferpay_payment_method, class: Spree::PaymentMethod::SaferpayPaymentMethod do
+  factory :saferpay_payment_method, class: 'Spree::PaymentMethod::SaferpayPaymentMethod' do
     name  { "saferpay_payment_method" }
     preferred_require_liability_shift { true }
 
@@ -13,11 +12,13 @@ FactoryBot.define do
     end
   end
 
-  factory :saferpay_payment_method_payment_page, class: Spree::PaymentMethod::SaferpayPaymentPage, parent: :saferpay_payment_method do
+  factory :saferpay_payment_method_payment_page, class: 'Spree::PaymentMethod::SaferpayPaymentPage',
+parent: :saferpay_payment_method do
     name { "saferpay_payment_page" }
   end
 
-  factory :saferpay_payment_method_transaction, class: Spree::PaymentMethod::SaferpayTransaction, parent: :saferpay_payment_method do
+  factory :saferpay_payment_method_transaction, class: 'Spree::PaymentMethod::SaferpayTransaction',
+parent: :saferpay_payment_method do
     name { "saferpay_transaction" }
   end
 end

@@ -1,9 +1,9 @@
 FactoryBot.define do
-  factory :six_saferpay_payment, class: Spree::SixSaferpayPayment do
+  factory :six_saferpay_payment, class: 'Spree::SixSaferpayPayment' do
     order
     association :payment_method, factory: :saferpay_payment_method
     expiration { Time.current + 2.hours }
-    sequence(:token, (1..100000).to_a.shuffle.to_enum)
+    sequence(:token, (1..100_000).to_a.shuffle.to_enum)
 
     trait :authorized do
       sequence(:transaction_id) { |n| "TRANSACTION_ID_#{n}" }
@@ -78,7 +78,6 @@ FactoryBot.define do
           }
         }
       end
-
     end
 
     trait :without_liability_shift do
@@ -113,6 +112,5 @@ FactoryBot.define do
         )
       end
     end
-
   end
 end

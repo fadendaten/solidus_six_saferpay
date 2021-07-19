@@ -30,14 +30,14 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # spec.add_dependency 'solidus_core', ['>= 2.0.0', '< 4']
+  spec.add_dependency 'rails-i18n', '~> 5.1'
+  spec.add_dependency 'six_saferpay', '~> 2.8.1'
   spec.add_dependency 'solidus_core', ['~> 2.10.0']
   spec.add_dependency 'solidus_support', '~> 0.5'
-  spec.add_dependency 'six_saferpay', '~> 2.8.1'
-  spec.add_dependency 'rails-i18n', '~> 5.1'
 
-  spec.add_development_dependency 'solidus_dev_support', '~> 2.5'
-  spec.add_development_dependency 'rails-controller-testing', '~> 1.0', '>= 1.0.4'
   spec.add_development_dependency 'pry', '~> 0.12'
-  spec.add_development_dependency 'shoulda-matchers', '~> 4.5.1'
+  spec.add_development_dependency 'rails-controller-testing', '~> 1.0', '>= 1.0.4'
   spec.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
+  spec.add_development_dependency 'shoulda-matchers', '~> 4.5.1'
+  spec.add_development_dependency 'solidus_dev_support', '~> 2.5'
 end

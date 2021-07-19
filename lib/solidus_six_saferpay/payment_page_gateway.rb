@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module SolidusSixSaferpay
   class PaymentPageGateway < Gateway
-
     def inquire(saferpay_payment, options = {})
       inquire_response = perform_assert_request(saferpay_payment, options)
 
@@ -46,7 +47,7 @@ module SolidusSixSaferpay
       )
     end
 
-    def perform_assert_request(saferpay_payment, options = {})
+    def perform_assert_request(saferpay_payment, _options = {})
       payment_page_assert = SixSaferpay::SixPaymentPage::Assert.new(token: saferpay_payment.token)
       SixSaferpay::Client.post(payment_page_assert)
     end

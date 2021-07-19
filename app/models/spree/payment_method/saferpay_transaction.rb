@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module Spree
   class PaymentMethod::SaferpayTransaction < PaymentMethod::SaferpayPaymentMethod
-
     def gateway_class
       ::SolidusSixSaferpay::TransactionGateway
     end

@@ -1,12 +1,12 @@
+# frozen_string_literal: true
+
 module Spree
   module SolidusSixSaferpay
-
     # This handler can be overridden by host applications to manage control
     # flow after the payment authorization was successful and the payment was verified.
     # If not overridden, the handler will simply ensure that the order has
     # moved from the "payment" state to the next state.
     class PaymentProcessingSuccessHandler
-
       attr_reader :controller_context, :order
 
       def self.call(controller_context:, order:)

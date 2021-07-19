@@ -1,5 +1,4 @@
 RSpec.shared_examples 'checkout_controller' do
-
   routes { Spree::Core::Engine.routes }
 
   subject { described_class.new }
@@ -18,7 +17,9 @@ RSpec.shared_examples 'checkout_controller' do
   describe 'GET init' do
     let(:success) { false }
     let(:redirect_url) { '/saferpay/redirect/url' }
-    let(:initialized_payment) { instance_double("Spree::SolidusSixSaferpay::InitializePayment", success?: success, redirect_url: redirect_url) }
+    let(:initialized_payment) {
+      instance_double("Spree::SolidusSixSaferpay::InitializePayment", success?: success, redirect_url: redirect_url)
+    }
 
     context 'when the current order for this user is not the one for which payment is initialized' do
       it 'returns an error and redirects to the cart page' do
@@ -34,17 +35,18 @@ RSpec.shared_examples 'checkout_controller' do
     end
 
     it 'tries to initialize the saferpay payment' do
-      expect(initialize_payment_service_class).to receive(:call).with(order, payment_method).and_return(initialized_payment)
+      expect(initialize_payment_service_class).to receive(:call).with(order,
+        payment_method).and_return(initialized_payment)
 
       get :init, params: { order_number: order_number, payment_method_id: payment_method.id }
     end
-
 
     context 'when payment initialize succeeds' do
       let(:success) { true }
 
       before do
-        allow(initialize_payment_service_class).to receive(:call).with(order, payment_method).and_return(initialized_payment)
+        allow(initialize_payment_service_class).to receive(:call).with(order,
+          payment_method).and_return(initialized_payment)
       end
 
       it 'returns the redirect_url' do
@@ -59,9 +61,9 @@ RSpec.shared_examples 'checkout_controller' do
       let(:success) { false }
 
       before do
-        allow(initialize_payment_service_class).to receive(:call).with(order, payment_method).and_return(initialized_payment)
+        allow(initialize_payment_service_class).to receive(:call).with(order,
+          payment_method).and_return(initialized_payment)
       end
-
 
       it 'returns an error and redirects to the cart page' do
         get :init, params: { order_number: order_number, payment_method_id: payment_method.id }
@@ -72,9 +74,7 @@ RSpec.shared_examples 'checkout_controller' do
         expect(response.status).to eq(422)
       end
     end
-
   end
-
 
   describe 'GET success' do
     context 'when the order is not found' do
@@ -82,7 +82,8 @@ RSpec.shared_examples 'checkout_controller' do
       let(:order_number) { "not_found" }
 
       it 'calls the relevant handler service' do
-        expect(Spree::SolidusSixSaferpay::OrderNotFoundHandler).to receive(:call).with(controller_context: @controller, order_number: order_number)
+        expect(Spree::SolidusSixSaferpay::OrderNotFoundHandler).to receive(:call).with(controller_context: @controller,
+          order_number: order_number)
 
         get :success, params: { order_number: order_number }
       end
@@ -100,7 +101,9 @@ RSpec.shared_examples 'checkout_controller' do
       let!(:payment) { nil }
 
       it 'calls the relevant handler service' do
-        expect(Spree::SolidusSixSaferpay::PaymentNotFoundHandler).to receive(:call).with(controller_context: @controller, order: order)
+        expect(Spree::SolidusSixSaferpay::PaymentNotFoundHandler).to receive(:call).with(
+          controller_context: @controller, order: order
+        )
 
         get :success, params: { order_number: order_number }
       end
@@ -111,7 +114,6 @@ RSpec.shared_examples 'checkout_controller' do
         expect(response).to render_template :iframe_breakout_redirect
       end
     end
-
 
     context 'when the order is already completed' do
       let(:order) { create(:order_ready_to_ship) }
@@ -127,7 +129,9 @@ RSpec.shared_examples 'checkout_controller' do
       let!(:payment) { create(:six_saferpay_payment, order: order) }
       let(:assert_success) { false }
       let(:payment_assert) { instance_double("Spree::SolidusSixSaferpay::AssertPaymentPage", success?: assert_success) }
-      let(:payment_inquiry) { instance_double("Spree::SolidusSixSaferpay::InquirePaymentPagePayment", user_message: "payment inquiry message") }
+      let(:payment_inquiry) {
+        instance_double("Spree::SolidusSixSaferpay::InquirePaymentPagePayment", user_message: "payment inquiry message")
+      }
 
       it 'asserts the payment' do
         expect(authorize_payment_service_class).to receive(:call).with(payment).and_return(payment_assert)
@@ -139,7 +143,10 @@ RSpec.shared_examples 'checkout_controller' do
       context 'when the payment assert is successful' do
         let(:assert_success) { true }
         let(:process_success) { false }
-        let(:processed_payment) { instance_double("Spree::SolidusSixSaferpay::ProcessPaymentPagePayment", success?: process_success, user_message: "payment processing message") }
+        let(:processed_payment) {
+          instance_double("Spree::SolidusSixSaferpay::ProcessPaymentPagePayment", success?: process_success,
+         user_message: "payment processing message")
+        }
 
         before do
           allow(authorize_payment_service_class).to receive(:call).with(payment).and_return(payment_assert)
@@ -159,11 +166,12 @@ RSpec.shared_examples 'checkout_controller' do
           end
 
           it 'calls the custom success processing handler' do
-            expect(Spree::SolidusSixSaferpay::PaymentProcessingSuccessHandler).to receive(:call).with(controller_context: @controller, order: order)
+            expect(Spree::SolidusSixSaferpay::PaymentProcessingSuccessHandler).to receive(:call).with(
+              controller_context: @controller, order: order
+            )
 
             get :success, params: { order_number: order_number }
           end
-
 
           context 'when order is in payment state' do
             let(:order) { create(:order, state: :payment) }
@@ -199,7 +207,6 @@ RSpec.shared_examples 'checkout_controller' do
             expect(flash[:error]).to eq("payment processing message")
           end
         end
-
       end
 
       context 'when the payment assert fails' do
@@ -226,14 +233,13 @@ RSpec.shared_examples 'checkout_controller' do
   end
 
   describe 'GET fail' do
-
     context 'when the order is not found' do
       let(:order) { nil }
       let(:order_number) { "not_found" }
 
-
       it 'calls the relevant handler service' do
-        expect(Spree::SolidusSixSaferpay::OrderNotFoundHandler).to receive(:call).with(controller_context: @controller, order_number: order_number)
+        expect(Spree::SolidusSixSaferpay::OrderNotFoundHandler).to receive(:call).with(controller_context: @controller,
+          order_number: order_number)
 
         get :fail, params: { order_number: order_number }
       end
@@ -251,7 +257,9 @@ RSpec.shared_examples 'checkout_controller' do
       let!(:payment) { nil }
 
       it 'calls the relevant handler service' do
-        expect(Spree::SolidusSixSaferpay::PaymentNotFoundHandler).to receive(:call).with(controller_context: @controller, order: order)
+        expect(Spree::SolidusSixSaferpay::PaymentNotFoundHandler).to receive(:call).with(
+          controller_context: @controller, order: order
+        )
 
         get :fail, params: { order_number: order_number }
       end
@@ -265,7 +273,9 @@ RSpec.shared_examples 'checkout_controller' do
 
     context 'when payment create was successful' do
       let!(:payment) { create(:six_saferpay_payment, order: order) }
-      let(:payment_inquiry) { instance_double("Spree::SolidusSixSaferpay::InquirePaymentPagePayment", user_message: "payment inquiry message") }
+      let(:payment_inquiry) {
+        instance_double("Spree::SolidusSixSaferpay::InquirePaymentPagePayment", user_message: "payment inquiry message")
+      }
 
       it 'inquires the payment' do
         expect(inquire_payment_service_class).to receive(:call).with(payment).and_return(payment_inquiry)

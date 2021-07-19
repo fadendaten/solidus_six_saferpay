@@ -3,6 +3,7 @@ require 'rails_helper'
 module Spree
   RSpec.describe SixSaferpayPayment, type: :model do
     let(:payment) { FactoryBot.create(:six_saferpay_payment) }
+
     describe 'associations' do
       it { is_expected.to belong_to :order }
       it { is_expected.to belong_to :payment_method }
@@ -91,6 +92,7 @@ module Spree
 
       context 'when the payment is authorized' do
         let(:payment) { FactoryBot.create(:six_saferpay_payment, :authorized) }
+
         it 'returns a SixSaferpay::Liability' do
           expect(payment.liability).to be_a(SixSaferpay::Liability)
         end
@@ -198,6 +200,4 @@ module Spree
       end
     end
   end
-
 end
-

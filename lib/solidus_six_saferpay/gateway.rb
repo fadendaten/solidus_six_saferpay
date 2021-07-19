@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module SolidusSixSaferpay
   class Gateway
-
     include Spree::RouteAccess
 
     def initialize(options = {})
@@ -28,11 +29,11 @@ module SolidusSixSaferpay
       handle_error(e, initialize_response)
     end
 
-    def authorize(amount, saferpay_payment, options = {})
+    def authorize(_amount, _saferpay_payment, _options = {})
       raise NotImplementedError, "must be implemented in PaymentPageGateway or TransactionGateway"
     end
 
-    def inquire(saferpay_payment, options = {})
+    def inquire(_saferpay_payment, _options = {})
       raise NotImplementedError, "must be implemented in PaymentPageGateway or TransactionGateway"
     end
 
@@ -40,7 +41,7 @@ module SolidusSixSaferpay
       capture(amount, saferpay_payment.transaction_id, options)
     end
 
-    def capture(_amount, transaction_id, options={})
+    def capture(_amount, transaction_id, _options = {})
       transaction_reference = SixSaferpay::TransactionReference.new(transaction_id: transaction_id)
       payment_capture = SixSaferpay::SixTransaction::Capture.new(transaction_reference: transaction_reference)
 
@@ -52,12 +53,11 @@ module SolidusSixSaferpay
         capture_response,
         { authorization: capture_response.capture_id }
       )
-
     rescue SixSaferpay::Error => e
       handle_error(e, capture_response)
     end
 
-    def void(transaction_id, options = {})
+    def void(transaction_id, _options = {})
       transaction_reference = SixSaferpay::TransactionReference.new(transaction_id: transaction_id)
       payment_cancel = SixSaferpay::SixTransaction::Cancel.new(transaction_reference: transaction_reference)
 
@@ -90,21 +90,21 @@ module SolidusSixSaferpay
       saferpay_refund = SixSaferpay::Refund.new(amount: saferpay_amount, order_id: payment.order.number)
       capture_reference = SixSaferpay::CaptureReference.new(capture_id: payment.transaction_id)
 
-      payment_refund = SixSaferpay::SixTransaction::Refund.new(refund: saferpay_refund, capture_reference: capture_reference)
+      payment_refund = SixSaferpay::SixTransaction::Refund.new(refund: saferpay_refund,
+        capture_reference: capture_reference)
 
       if refund_response = SixSaferpay::Client.post(payment_refund)
 
         # actually capture the refund
         capture(amount_cents, refund_response.transaction.id, options)
       end
-
     rescue SixSaferpay::Error => e
       handle_error(e, refund_response)
     end
 
     private
 
-    def interface_initialize_object(order, payment_method)
+    def interface_initialize_object(_order, _payment_method)
       raise NotImplementedError, "Must be implemented in PaymentPageGateway or TransactionGateway"
     end
 
@@ -150,17 +150,18 @@ module SolidusSixSaferpay
         phone: nil,
         email: nil,
       )
-      payer = SixSaferpay::Payer.new(language_code: I18n.locale, billing_address: billing_address, delivery_address: delivery_address)
+      payer = SixSaferpay::Payer.new(language_code: I18n.locale, billing_address: billing_address,
+        delivery_address: delivery_address)
 
       params = { payment: payment, payer: payer, return_urls: return_urls(order) }
 
       six_payment_methods = payment_method.enabled_payment_methods
-      params.merge!(payment_methods: six_payment_methods) unless six_payment_methods.blank?
+      params[:payment_methods] = six_payment_methods if six_payment_methods.present?
 
       params
     end
 
-    def return_urls(order)
+    def return_urls(_order)
       raise NotImplementedError, "Must be implemented in PaymentPageGateway or TransactionGateway"
     end
 
