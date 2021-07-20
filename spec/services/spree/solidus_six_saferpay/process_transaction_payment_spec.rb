@@ -11,7 +11,7 @@ module Spree
         it_behaves_like "it uses the transaction gateway"
       end
 
-      describe '#call' do
+      describe '#call', :focus do
         it_behaves_like 'process_authorized_payment'
       end
     end

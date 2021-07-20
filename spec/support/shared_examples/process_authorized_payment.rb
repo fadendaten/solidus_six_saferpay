@@ -1,55 +1,42 @@
 RSpec.shared_examples 'process_authorized_payment' do
   before do
-    allow(subject).to receive(:gateway).and_return(double('gateway'))
+    allow(SolidusSixSaferpay::Gateway).to receive(:new).and_return(instance_double('SolidusSixSaferpay::Gateway'))
   end
 
-  context 'liability_shift check' do
+  describe 'liability_shift check' do
     before do
-      # ensure other methods don't modify outcome
-      allow(subject).to receive(:validate_payment!)
-      allow(subject).to receive(:cancel_old_solidus_payments)
+      # ensure validation does not affect outcome
+      allow(Spree::SolidusSixSaferpay::PaymentValidator).to receive(:call).with(payment)
       allow(payment).to receive(:create_solidus_payment!)
+
+      allow(subject.gateway).to receive(:void).with(payment.transaction_id)
     end
 
     context 'when liability shift is required' do
-      context 'and liability shift is not granted' do
+      context 'when liability shift is not granted' do
         let(:payment) { create(:six_saferpay_payment, :authorized, :without_liability_shift) }
 
         it 'cancels the payment' do
-          expect(payment.payment_method.preferred_require_liability_shift).to be true
-          expect(payment.liability.liability_shift).to be false
-
-          expect(subject.gateway).to receive(:void).with(payment.transaction_id)
-
           subject.call
+
+          expect(subject.gateway).to have_received(:void)
         end
 
         it 'indicates failure' do
-          expect(payment.payment_method.preferred_require_liability_shift).to be true
-          expect(payment.liability.liability_shift).to be false
-
-          expect(subject.gateway).to receive(:void).with(payment.transaction_id)
-
           subject.call
 
           expect(subject).not_to be_success
         end
       end
 
-      context 'and liability shift is granted' do
+      context 'when liability shift is granted' do
         it "doesn't cancel the payment" do
-          expect(payment.payment_method.preferred_require_liability_shift).to be true
-          expect(payment.liability.liability_shift).to be true
-
-          expect(subject.gateway).not_to receive(:void)
-
           subject.call
+
+          expect(subject.gateway).not_to have_received(:void)
         end
 
         it 'passes the liability shift check' do
-          expect(payment.payment_method.preferred_require_liability_shift).to be true
-          expect(payment.liability.liability_shift).to be true
-
           subject.call
 
           expect(subject).to be_success
@@ -60,44 +47,34 @@ RSpec.shared_examples 'process_authorized_payment' do
     context 'when liability shift is not required' do
       let(:payment_method) { create(:saferpay_payment_method, :no_require_liability_shift) }
 
-      context 'and liability shift is not granted' do
+      context 'when liability shift is not granted' do
         let(:payment) {
           create(:six_saferpay_payment, :authorized, :without_liability_shift, payment_method: payment_method)
         }
 
         it "doesn't cancel the payment" do
-          expect(payment.payment_method.preferred_require_liability_shift).to be false
-          expect(payment.liability.liability_shift).to be false
-
-          expect(subject.gateway).not_to receive(:void)
-
           subject.call
+
+          expect(subject.gateway).not_to have_received(:void)
         end
 
         it 'passes the liability shift check' do
-          expect(payment.payment_method.preferred_require_liability_shift).to be false
-          expect(payment.liability.liability_shift).to be false
           subject.call
 
           expect(subject).to be_success
         end
       end
 
-      context 'and liability shift is granted' do
+      context 'when liability shift is granted' do
         let(:payment) { create(:six_saferpay_payment, :authorized, payment_method: payment_method) }
 
         it "doesn't cancel the payment" do
-          expect(payment.payment_method.preferred_require_liability_shift).to be false
-          expect(payment.liability.liability_shift).to be true
-
-          expect(subject.gateway).not_to receive(:void)
-
           subject.call
+
+          expect(subject.gateway).not_to have_received(:void)
         end
 
         it 'passes the liability shift check' do
-          expect(payment.payment_method.preferred_require_liability_shift).to be false
-          expect(payment.liability.liability_shift).to be true
           subject.call
 
           expect(subject).to be_success
@@ -106,26 +83,19 @@ RSpec.shared_examples 'process_authorized_payment' do
     end
   end
 
-  context 'payment validation' do
-    before do
-      allow(subject).to receive(:gateway).and_return(double('gateway'))
-
-      # ensure other methods don't modify outcome
-      allow(subject).to receive(:check_liability_shift_requirements!)
-      allow(subject).to receive(:cancel_old_solidus_payments)
-      allow(payment).to receive(:create_solidus_payment!)
-    end
-
+  describe 'payment validation' do
     it 'validates the payment' do
-      expect(Spree::SolidusSixSaferpay::PaymentValidator).to receive(:call).with(payment)
+      allow(Spree::SolidusSixSaferpay::PaymentValidator).to receive(:call).with(payment)
       subject.call
+      expect(Spree::SolidusSixSaferpay::PaymentValidator).to have_received(:call)
     end
 
     context 'when the payment is invalid' do
       it 'cancels the payment' do
-        expect(subject.gateway).to receive(:void).with(payment.transaction_id)
-
+        allow(subject.gateway).to receive(:void).with(payment.transaction_id)
         subject.call
+
+        expect(subject.gateway).to have_received(:void).with(payment.transaction_id)
       end
 
       it 'indicates failure' do
@@ -143,9 +113,9 @@ RSpec.shared_examples 'process_authorized_payment' do
       end
 
       it "doesn't cancel the payment" do
-        expect(subject.gateway).not_to receive(:void)
-
+        allow(subject.gateway).to receive(:void)
         subject.call
+        expect(subject.gateway).not_to have_received(:void)
       end
 
       it 'indicates success' do
@@ -158,13 +128,14 @@ RSpec.shared_examples 'process_authorized_payment' do
 
   context 'when the payment has passed all validations' do
     before do
-      allow(subject).to receive(:check_liability_shift_requirements!).and_return(true)
-      allow(subject).to receive(:validate_payment!).and_return(true)
+      # assume liability shift is not necessary
+      allow(payment.payment_method).to receive(:preferred_require_liability_shift).and_return(false)
+      # assume payment is valid
+      allow(Spree::SolidusSixSaferpay::PaymentValidator).to receive(:call).with(payment).and_return(true)
     end
 
     context 'when previous solidus payments exist for this order' do
       let(:order) { payment.order }
-      let!(:previous_payment_invalid) { create(:payment_using_saferpay, order: order) }
       let!(:previous_payment_checkout) { create(:payment_using_saferpay, order: order) }
 
       before do
@@ -173,21 +144,21 @@ RSpec.shared_examples 'process_authorized_payment' do
         # are loaded from the DB and because #solidus_payments_to_cancel
         # is just AR scopes, I prefer this test over using stuff like
         # #expect_any_instance_of
-        allow(subject).to receive(:solidus_payments_to_cancel).and_return([previous_payment_checkout])
+        allow(subject).to receive(:solidus_payments_to_cancel).and_return([previous_payment_checkout]) # rubocop:disable RSpec/SubjectStub
       end
 
       it 'cancels old solidus payments' do
-        expect(previous_payment_invalid).not_to receive(:cancel!)
-        expect(previous_payment_checkout).to receive(:cancel!)
-
+        allow(previous_payment_checkout).to receive(:cancel!)
         subject.call
+
+        expect(previous_payment_checkout).to have_received(:cancel!)
       end
     end
 
     it 'creates a new solidus payment' do
-      expect(payment).to receive(:create_solidus_payment!)
-
+      allow(payment).to receive(:create_solidus_payment!)
       subject.call
+      expect(payment).to have_received(:create_solidus_payment!)
     end
 
     it 'indicates success' do
