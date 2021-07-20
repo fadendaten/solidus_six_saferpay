@@ -52,6 +52,17 @@ module Spree
           return
         end
 
+        # ensure that completed orders don't try to reprocess the
+        # authorization. This could happen if a user presses the back button
+        # after completing an order.
+        # There is no error handling because it should look like you are simply
+        # redirected to the cart page.
+        if @order.completed?
+          @redirect_path = spree.cart_path
+          render :iframe_breakout_redirect, layout: false
+          return
+        end
+
         saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
 
         if saferpay_payment.nil?
@@ -64,16 +75,6 @@ module Spree
           return
         end
 
-        # ensure that completed orders don't try to reprocess the
-        # authorization. This could happen if a user presses the back button
-        # after completing an order.
-        # There is no error handling because it should look like you are simply
-        # redirected to the cart page.
-        if @order.completed?
-          @redirect_path = spree.cart_path
-          render :iframe_breakout_redirect, layout: false
-          return
-        end
 
         # NOTE: PaymentPage payments are authorized directly. Instead, we
         # perform an ASSERT here to gather the necessary details.

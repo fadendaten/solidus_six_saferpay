@@ -19,7 +19,6 @@ RSpec.shared_examples "it uses the payment page gateway" do
     end
 
     context 'when the gateway is configured correctly' do
-
       it 'returns a PaymentPageGateway' do
         expect(subject.gateway).to be_a(::SolidusSixSaferpay::PaymentPageGateway)
       end

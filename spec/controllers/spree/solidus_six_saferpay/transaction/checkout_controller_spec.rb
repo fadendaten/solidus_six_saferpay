@@ -8,7 +8,9 @@ module Spree
       let(:process_authorization_service_class) { ProcessTransactionPayment }
       let(:inquire_payment_service_class) { InquireTransactionPayment }
 
-      it_behaves_like "checkout_controller"
+      describe 'dani' do
+        it_behaves_like "checkout_controller"
+      end
     end
   end
 end
