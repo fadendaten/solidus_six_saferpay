@@ -31,9 +31,7 @@ module SolidusSixSaferpay
       end
 
       it 'initializes a payment page payment' do
-        allow(SixSaferpay::Client).to receive(:post).with(
-          any_args
-        ).and_return(api_initialize_response)
+        allow(SixSaferpay::Client).to receive(:post).and_return(api_initialize_response)
 
         gateway.initialize_payment(order, payment_method)
 
@@ -91,17 +89,15 @@ module SolidusSixSaferpay
 
       context 'when the payment initialization is successful' do
         before do
-          allow(SixSaferpay::Client).to receive(:post).with(
-            instance_of(SixSaferpay::SixTransaction::Initialize)
-          ).and_return(api_initialize_response)
+          allow(SixSaferpay::Client).to receive(:post).and_return(api_initialize_response)
         end
 
         it 'returns a success gateway response' do
-          allow(GatewayResponse).to receive(:new).with(true, instance_of(String), api_initialize_response, {})
+          allow(GatewayResponse).to receive(:new)
 
           gateway.initialize_payment(order, payment_method)
 
-          expect(GatewayResponse).to have_received(:new)
+          expect(GatewayResponse).to have_received(:new).with(true, instance_of(String), api_initialize_response, {})
         end
       end
 
@@ -116,18 +112,11 @@ module SolidusSixSaferpay
         end
 
         before do
-          allow(SixSaferpay::Client).to receive(:post).with(
-            instance_of(SixSaferpay::SixTransaction::Initialize)
-          ).and_raise(six_saferpay_error)
+          allow(SixSaferpay::Client).to receive(:post).and_raise(six_saferpay_error)
         end
 
         it 'handles the error gracefully' do
-          allow(GatewayResponse).to receive(:new).with(
-            false,
-            six_saferpay_error.error_message,
-            nil,
-            error_name: six_saferpay_error.error_name
-          )
+          allow(GatewayResponse).to receive(:new)
 
           gateway.initialize_payment(order, payment_method)
 
@@ -240,9 +229,6 @@ module SolidusSixSaferpay
       end
 
       it 'performs an authorize request' do
-        allow(SixSaferpay::SixTransaction::Authorize).to receive(:new).with(
-          token: payment.token
-        ).and_call_original
         allow(SixSaferpay::Client).to receive(:post).and_return(api_authorize_response)
 
         gateway.authorize(payment.order.total, payment)
@@ -265,11 +251,16 @@ module SolidusSixSaferpay
         end
 
         it 'returns a successful gateway response' do
-          allow(GatewayResponse).to receive(:new).with(true, instance_of(String), api_authorize_response, {})
+          allow(GatewayResponse).to receive(:new)
 
           gateway.authorize(payment.order.total, payment)
 
-          expect(GatewayResponse).to have_received(:new)
+          expect(GatewayResponse).to have_received(:new).with(
+            true,
+            instance_of(String),
+            api_authorize_response,
+            {}
+          )
         end
       end
 
