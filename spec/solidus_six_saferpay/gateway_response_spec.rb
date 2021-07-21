@@ -2,30 +2,25 @@ require 'rails_helper'
 
 module SolidusSixSaferpay
   RSpec.describe GatewayResponse do
-    subject { described_class.new(success, message, api_response, options) }
+    subject(:response) { described_class.new(success, 'response message', 'API_RESPONSE_INSTANCE', options) }
 
     let(:success) { true }
-    let(:message) { double('message') }
-    let(:api_response) { double('API response') }
     let(:options) { {} }
 
     describe '#initialize' do
-      let(:error_name) { double("error_name") }
-      let(:authorization) { double("authorization") }
-
       describe 'when given option :error_name' do
-        let(:options) { { error_name: error_name } }
+        let(:options) { { error_name: 'GENERAL ERROR' } }
 
         it 'sets the error name' do
-          expect(subject.error_name).to eq(error_name)
+          expect(response.error_name).to eq('GENERAL ERROR')
         end
       end
 
       describe 'when given option :authorization' do
-        let(:options) { { authorization: authorization } }
+        let(:options) { { authorization: 'CAPTURE_ID' } }
 
         it 'sets the authorization' do
-          expect(subject.authorization).to eq(authorization)
+          expect(response.authorization).to eq('CAPTURE_ID')
         end
       end
     end
@@ -35,7 +30,7 @@ module SolidusSixSaferpay
         let(:success) { true }
 
         it 'is true' do
-          expect(subject).to be_success
+          expect(response).to be_success
         end
       end
 
@@ -43,26 +38,26 @@ module SolidusSixSaferpay
         let(:success) { false }
 
         it 'is false' do
-          expect(subject).not_to be_success
+          expect(response).not_to be_success
         end
       end
     end
 
     describe '#to_s' do
       it 'returns the message' do
-        expect(subject.to_s).to eq(message)
+        expect(response.to_s).to eq('response message')
       end
     end
 
     describe '#avs_result' do
       it 'is an empty hash' do
-        expect(subject.avs_result).to eq({})
+        expect(response.avs_result).to eq({})
       end
     end
 
     describe '#cvv_result' do
       it 'is nil' do
-        expect(subject.cvv_result).to be_nil
+        expect(response.cvv_result).to be_nil
       end
     end
   end
