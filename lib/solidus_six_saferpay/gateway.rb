@@ -117,7 +117,7 @@ module SolidusSixSaferpay
       )
 
       billing_address = order.billing_address
-      billing_address = SixSaferpay::Address.new(
+      bill_address = SixSaferpay::Address.new(
         first_name: billing_address.first_name,
         last_name: billing_address.last_name,
         date_of_birth: nil,
@@ -150,8 +150,11 @@ module SolidusSixSaferpay
         phone: nil,
         email: nil,
       )
-      payer = SixSaferpay::Payer.new(language_code: I18n.locale, billing_address: billing_address,
-        delivery_address: delivery_address)
+      payer = SixSaferpay::Payer.new(
+        language_code: I18n.locale,
+        billing_address: bill_address,
+        delivery_address: delivery_address
+      )
 
       params = { payment: payment, payer: payer, return_urls: return_urls(order) }
 

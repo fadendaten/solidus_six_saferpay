@@ -405,6 +405,7 @@ RSpec.shared_examples 'checkout_controller' do
         it 'calls the relevant handler service' do
           allow(Spree::SolidusSixSaferpay::PaymentNotFoundHandler).to receive(:call).with(
             controller_context: @controller, # rubocop:disable RSpec/InstanceVariable
+            order: order
           )
 
           get :fail, params: { order_number: order_number }

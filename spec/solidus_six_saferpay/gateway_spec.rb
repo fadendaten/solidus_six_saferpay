@@ -52,7 +52,7 @@ module SolidusSixSaferpay
           allow(ENV).to receive(:fetch).with('SIX_SAFERPAY_CSS_URL').and_return(css_url)
         end
 
-        it 'falls back to ENV vars' do
+        it 'falls back to ENV vars', :aggregate_failures do
           gateway = described_class.new
 
           config = SixSaferpay.config
