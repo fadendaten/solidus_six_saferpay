@@ -62,7 +62,7 @@ module Spree
       end
 
       def check_liability_shift_requirements!
-        if require_liability_shift? && !liability_shifted? # rucocop:disable Style/GuardClause
+        if require_liability_shift? && !liability_shifted? # rubocop:disable Style/GuardClause
           raise ::SolidusSixSaferpay::InvalidSaferpayPayment.new(details: I18n.t(:liability_shift_not_granted,
             scope: [:solidus_six_saferpay, :errors]))
         end

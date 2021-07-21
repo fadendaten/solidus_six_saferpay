@@ -74,9 +74,10 @@ module SolidusSixSaferpay
     end
 
     def try_void(payment)
-      if payment.checkout? && payment.transaction_id
-        void(payment.transaction_id, originator: self)
-      end
+      return unless payment.checkout?
+      return unless payment.transaction_id
+
+      void(payment.transaction_id, originator: self)
     end
 
     # aliased to #refund for compatibility with solidus internals

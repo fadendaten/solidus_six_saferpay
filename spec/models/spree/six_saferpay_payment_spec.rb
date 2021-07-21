@@ -2,7 +2,7 @@ require 'rails_helper'
 
 module Spree
   RSpec.describe SixSaferpayPayment, type: :model do
-    let(:payment) { FactoryBot.create(:six_saferpay_payment) }
+    subject(:payment) { FactoryBot.create(:six_saferpay_payment) }
 
     describe 'associations' do
       it { is_expected.to belong_to :order }
@@ -15,13 +15,29 @@ module Spree
     end
 
     describe "#create_solidus_payment!" do
-      it 'creates a Solidus::Payment with the correct information' do
-        solidus_payment = payment.create_solidus_payment!
-        expect(Spree::Payment.count).to eq(1)
+      subject(:solidus_payment) { payment.create_solidus_payment! }
+
+      it 'creates a Solidus::Payment' do
+        expect { payment.create_solidus_payment! }.to change { Spree::Payment.count }.from(0).to(1)
+      end
+
+      it 'sets the order' do
         expect(solidus_payment.order).to eq(payment.order)
+      end
+
+      it 'sets the payment method' do
         expect(solidus_payment.payment_method).to eq(payment.payment_method)
+      end
+
+      it 'sets the response code' do
         expect(solidus_payment.response_code).to eq(payment.transaction_id)
+      end
+
+      it 'sets the amount' do
         expect(solidus_payment.amount).to eq(payment.order.total)
+      end
+
+      it 'sets the source' do
         expect(solidus_payment.source).to eq(payment)
       end
     end
@@ -46,14 +62,35 @@ module Spree
           expect(payment.payment_means).to be_a(SixSaferpay::ResponsePaymentMeans)
         end
 
-        it 'sets the API response attributes correctly' do
+        it 'sets the payment method' do
           expect(payment.payment_means.brand.payment_method).to eq("MASTERCARD")
+        end
+
+        it 'sets the payment brand' do
           expect(payment.payment_means.brand.name).to eq("MasterCard")
+        end
+
+        it 'sets the display text' do
           expect(payment.payment_means.display_text).to eq("xxxx xxxx xxxx 1234")
+        end
+
+        it 'sets the masked number' do
           expect(payment.payment_means.card.masked_number).to eq("xxxxxxxxxxxx1234")
+        end
+
+        it 'sets the expiration year' do
           expect(payment.payment_means.card.exp_year).to eq(2019)
+        end
+
+        it 'sets the expiration month' do
           expect(payment.payment_means.card.exp_month).to eq(7)
+        end
+
+        it 'sets the card holder name' do
           expect(payment.payment_means.card.holder_name).to eq("John Doe")
+        end
+
+        it 'sets the card holder country' do
           expect(payment.payment_means.card.country_code).to eq("US")
         end
       end
@@ -73,10 +110,19 @@ module Spree
           expect(payment.transaction).to be_a(SixSaferpay::Transaction)
         end
 
-        it 'sets the API response attributes correctly' do
+        it 'sets the transaction type' do
           expect(payment.transaction.type).to eq("PAYMENT")
+        end
+
+        it 'sets the transaction status' do
           expect(payment.transaction.status).to eq("AUTHORIZED")
+        end
+
+        it 'sets the transaction amount' do
           expect(payment.transaction.amount.value).to eq('20000')
+        end
+
+        it 'sets the transaction currency' do
           expect(payment.transaction.amount.currency_code).to eq("CHF")
         end
       end
@@ -96,8 +142,11 @@ module Spree
           expect(payment.liability).to be_a(SixSaferpay::Liability)
         end
 
-        it 'sets the API response attributes correctly' do
+        it 'sets the liability shift' do
           expect(payment.liability.liability_shift).to be true
+        end
+
+        it 'sets the liable entity' do
           expect(payment.liability.liable_entity).to eq("ThreeDs")
         end
       end

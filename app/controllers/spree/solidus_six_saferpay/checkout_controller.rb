@@ -75,7 +75,6 @@ module Spree
           return
         end
 
-
         # NOTE: PaymentPage payments are authorized directly. Instead, we
         # perform an ASSERT here to gather the necessary details.
         # This might be confusing at first, but doing it this way makes sense
