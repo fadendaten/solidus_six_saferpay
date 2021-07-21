@@ -41,6 +41,7 @@ module SolidusSixSaferpay
       capture(amount, saferpay_payment.transaction_id, options)
     end
 
+    # amount is disregarded but kept to match the default gateway interface for #capture
     def capture(_amount, transaction_id, _options = {})
       transaction_reference = SixSaferpay::TransactionReference.new(transaction_id: transaction_id)
       payment_capture = SixSaferpay::SixTransaction::Capture.new(transaction_reference: transaction_reference)
