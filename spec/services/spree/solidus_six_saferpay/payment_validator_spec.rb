@@ -3,31 +3,46 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe PaymentValidator do
-      let(:payment) { create(:six_saferpay_payment, :authorized) }
+      subject(:service) { described_class.new(payment) }
 
-      let(:service) { described_class.new(payment) }
+      let(:payment) { create(:six_saferpay_payment, :authorized) }
 
       describe '.call' do
         it 'calls an initialized service with given saferpay payment' do
-          expect(described_class).to receive(:new).with(payment).and_return(service)
-          expect(service).to receive(:call)
+          allow(described_class).to receive(:new).with(payment).and_return(service)
+          allow(service).to receive(:call)
 
           described_class.call(payment)
+
+          expect(service).to have_received(:call)
         end
       end
 
       describe '#call' do
-        it 'performs multiple validations on the payment' do
-          expect(service).to receive(:validate_payment_authorized).with(payment.transaction)
-          expect(service).to receive(:validate_order_reference).with(payment.transaction)
-          expect(service).to receive(:validate_order_amount).with(payment.transaction)
+        before do
+          allow(service).to receive(:validate_order_reference)
+          allow(service).to receive(:validate_order_amount)
+          allow(service).to receive(:validate_payment_authorized)
+        end
 
+        it 'validates authorization' do
           service.call
+          expect(service).to have_received(:validate_payment_authorized).with(payment.transaction)
+        end
+
+        it 'validates order reference' do
+          service.call
+          expect(service).to have_received(:validate_order_reference).with(payment.transaction)
+        end
+
+        it 'validates order amount' do
+          service.call
+          expect(service).to have_received(:validate_order_amount).with(payment.transaction)
         end
       end
 
       describe '#validate_payment_authorized' do
-        let(:saferpay_transaction) { instance_double("SixSaferpay::Transaction", status: "AUTHORIZED") }
+        let(:saferpay_transaction) { instance_double('SixSaferpay::Transaction', status: 'AUTHORIZED') }
 
         context 'when the saferpay status is AUTHORIZED' do
           it 'passes validation' do
@@ -36,7 +51,7 @@ module Spree
         end
 
         context 'when the saferpay status is CAPTURED' do
-          let(:saferpay_transaction) { instance_double("SixSaferpay::Transaction", status: "CAPTURED") }
+          let(:saferpay_transaction) { instance_double('SixSaferpay::Transaction', status: 'CAPTURED') }
 
           it 'raises an error' do
             expect{

@@ -3,18 +3,23 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe PaymentProcessingSuccessHandler do
-      subject { described_class.new(controller_context: controller, order: order) }
+      subject(:handler) { described_class.new(controller_context: controller, order: order) }
 
-      let(:controller) { instance_double(SolidusSixSaferpay::CheckoutController) }
-      let(:order) { instance_double(Spree::Order, number: "R12345678") }
+      let(:controller) { instance_double('SolidusSixSaferpay::CheckoutController') }
+      let(:order) { instance_double('Spree::Order', number: "R12345678") }
 
       describe '.call' do
         it 'calls a new instance with given parameters' do
-          expect(described_class).to receive(:new).with(controller_context: controller,
-            order: order).and_return(subject)
-          expect(subject).to receive(:call)
+          allow(described_class).to receive(:new).with(
+            controller_context: controller,
+            order: order
+          ).and_return(handler)
+
+          allow(handler).to receive(:call)
 
           described_class.call(controller_context: controller, order: order)
+
+          expect(handler).to have_received(:call)
         end
       end
 
@@ -23,9 +28,11 @@ module Spree
           let(:order) { instance_double(Spree::Order, number: "R12345678", payment?: true) }
 
           it 'advances the order to the next state' do
-            expect(order).to receive(:next!)
+            allow(order).to receive(:next!)
 
-            subject.call
+            handler.call
+
+            expect(order).to have_received(:next!)
           end
         end
       end

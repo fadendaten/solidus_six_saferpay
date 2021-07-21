@@ -3,16 +3,18 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe ProcessAuthorizedPayment do
-      let(:payment) { create(:six_saferpay_payment, :authorized) }
+      subject(:service) { described_class.new(payment) }
 
-      let(:service) { described_class.new(payment) }
+      let(:payment) { create(:six_saferpay_payment, :authorized) }
 
       describe '.call' do
         it 'calls an initialized service with given order and payment method' do
-          expect(described_class).to receive(:new).with(payment).and_return(service)
-          expect(service).to receive(:call)
+          allow(described_class).to receive(:new).and_return(service)
+          allow(service).to receive(:call)
 
           described_class.call(payment)
+
+          expect(service).to have_received(:call)
         end
       end
 
