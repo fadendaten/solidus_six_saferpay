@@ -3,16 +3,17 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe CancelAuthorizedPayment do
-      let(:service) { described_class.new(payment) }
+      subject(:service) { described_class.new(payment) }
 
       describe '.call' do
         let(:payment) { create(:six_saferpay_payment) }
 
         it 'calls an initialized service with given order and payment method' do
-          expect(described_class).to receive(:new).with(payment).and_return(service)
-          expect(service).to receive(:call)
+          allow(described_class).to receive(:new).with(payment).and_return(service)
+          allow(service).to receive(:call)
 
           described_class.call(payment)
+          expect(service).to have_received(:call)
         end
       end
 
@@ -27,15 +28,21 @@ module Spree
           let(:payment) { create(:six_saferpay_payment) }
 
           it 'does not cancel the payment' do
-            expect(gateway).not_to receive(:void)
+            allow(gateway).to receive(:void)
 
             service.call
+
+            expect(gateway).not_to have_received(:void)
           end
 
           it 'is treated as an error' do
-            expect(::SolidusSixSaferpay::ErrorHandler).to receive(:handle).with(instance_of(::SolidusSixSaferpay::InvalidSaferpayPayment))
+            allow(::SolidusSixSaferpay::ErrorHandler).to receive(:handle)
 
             service.call
+
+            expect(::SolidusSixSaferpay::ErrorHandler).to have_received(:handle).with(
+              instance_of(::SolidusSixSaferpay::InvalidSaferpayPayment)
+            )
           end
         end
 
@@ -43,9 +50,11 @@ module Spree
           let(:payment) { create(:six_saferpay_payment, :authorized) }
 
           it 'voids the payment' do
-            expect(gateway).to receive(:void).with(payment.transaction_id)
+            allow(gateway).to receive(:void)
 
             service.call
+
+            expect(gateway).to have_received(:void).with(payment.transaction_id)
           end
         end
       end
