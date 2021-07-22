@@ -51,7 +51,7 @@ module Spree
           order: order,
           payment_method: payment_method,
           token: api_response.token,
-          expiration: DateTime.parse(api_response.expiration),
+          expiration: DateTime.parse(api_response.expiration).in_time_zone(Time.zone),
           response_hash: api_response.to_h
         }
       end
