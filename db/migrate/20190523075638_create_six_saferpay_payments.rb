@@ -2,7 +2,7 @@ class CreateSixSaferpayPayments < ActiveRecord::Migration[5.1]
   def change
     create_table :spree_six_saferpay_payments do |t|
       t.integer :order_id
-      t.references :payment_method
+      t.integer :payment_method_id
 
       t.string :token
       t.datetime :expiration
