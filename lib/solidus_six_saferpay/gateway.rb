@@ -158,7 +158,26 @@ module SolidusSixSaferpay
         delivery_address: delivery_address
       )
 
-      params = { payment: payment, payer: payer, return_urls: return_urls(order) }
+      order = SixSaferpay::Order.new(
+        items: order.line_items.map do |item|
+          variant = item.variant
+          SixSaferpay::Items.new(
+            type: 'PHYSICAL',
+            id: item.id,
+            variant_id: variant.sku,
+            name: variant.article_description,
+            quantity: item.quantity,
+            unit_price: item.total.to_i
+          )
+        end
+      )
+
+      params = {
+        payment: payment,
+        order: order,
+        payer: payer,
+        return_urls: return_urls(order)
+      }
 
       six_payment_methods = payment_method.enabled_payment_methods
       params[:payment_methods] = six_payment_methods if six_payment_methods.present?
