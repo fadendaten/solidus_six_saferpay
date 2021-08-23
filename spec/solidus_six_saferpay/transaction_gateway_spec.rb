@@ -13,7 +13,9 @@ module SolidusSixSaferpay
       )
     end
 
-    let(:order) { create(:order, total: 100) }
+    let(:bill_address) { create(:address, name: 'John Billable') }
+    let(:ship_address) { create(:address, name: 'John Shippable' ) }
+    let(:order) { create(:order, total: 100, bill_address: bill_address, ship_address: ship_address) }
     let(:payment_method) { create(:saferpay_payment_method) }
 
     describe '#initialize_payment' do
@@ -46,8 +48,8 @@ module SolidusSixSaferpay
             payer: having_attributes(
               language_code: I18n.locale,
               billing_address: having_attributes(
-                first_name: order.billing_address.first_name,
-                last_name: order.billing_address.last_name,
+                first_name: 'John',
+                last_name: 'Billable',
                 date_of_birth: nil,
                 company: nil,
                 gender: nil,
@@ -62,8 +64,8 @@ module SolidusSixSaferpay
                 email: nil
               ),
               delivery_address: having_attributes(
-                first_name: order.shipping_address.first_name,
-                last_name: order.shipping_address.last_name,
+                first_name: 'John',
+                last_name: 'Shippable',
                 date_of_birth: nil,
                 company: nil,
                 gender: nil,

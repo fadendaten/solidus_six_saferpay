@@ -111,78 +111,7 @@ module SolidusSixSaferpay
     end
 
     def interface_initialize_params(order, payment_method)
-      amount = Spree::Money.new(order.total, currency: order.currency)
-      payment = SixSaferpay::Payment.new(
-        amount: SixSaferpay::Amount.new(value: amount.cents, currency_code: amount.currency.iso_code),
-        order_id: order.number,
-        description: order.number
-      )
-
-      billing_address = order.billing_address
-      bill_address = SixSaferpay::Address.new(
-        first_name: billing_address.first_name,
-        last_name: billing_address.last_name,
-        date_of_birth: nil,
-        company: nil,
-        gender: nil,
-        legal_form: nil,
-        street: billing_address.address1,
-        street2: billing_address.address2,
-        zip: billing_address.zipcode,
-        city: billing_address.city,
-        country_subdevision_code: nil,
-        country_code: billing_address.country.iso,
-        phone: nil,
-        email: nil,
-      )
-      shipping_address = order.shipping_address
-      delivery_address = SixSaferpay::Address.new(
-        first_name: shipping_address.first_name,
-        last_name: shipping_address.last_name,
-        date_of_birth: nil,
-        company: nil,
-        gender: nil,
-        legal_form: nil,
-        street: shipping_address.address1,
-        street2: shipping_address.address2,
-        zip: shipping_address.zipcode,
-        city: shipping_address.city,
-        country_subdevision_code: nil,
-        country_code: shipping_address.country.iso,
-        phone: nil,
-        email: nil,
-      )
-      payer = SixSaferpay::Payer.new(
-        language_code: I18n.locale,
-        billing_address: bill_address,
-        delivery_address: delivery_address
-      )
-
-      order = SixSaferpay::Order.new(
-        items: order.line_items.map do |item|
-          variant = item.variant
-          SixSaferpay::Items.new(
-            type: 'PHYSICAL',
-            id: item.id,
-            variant_id: variant.sku,
-            name: variant.article_description,
-            quantity: item.quantity,
-            unit_price: item.total.to_i
-          )
-        end
-      )
-
-      params = {
-        payment: payment,
-        order: order,
-        payer: payer,
-        return_urls: return_urls(order)
-      }
-
-      six_payment_methods = payment_method.enabled_payment_methods
-      params[:payment_methods] = six_payment_methods if six_payment_methods.present?
-
-      params
+      PaymentInitializeParams.new(order, payment_method, return_urls(order)).params
     end
 
     def return_urls(_order)
@@ -204,5 +133,6 @@ module SolidusSixSaferpay
         error_name: error.error_name
       )
     end
+
   end
 end

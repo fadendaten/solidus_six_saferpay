@@ -5,9 +5,13 @@ module SolidusSixSaferpay
     # Define here the settings for this extension, e.g.:
     #
     attr_accessor :error_handlers
+    attr_accessor :address_name_extractor_class
+    attr_accessor :allow_unsafe_address_name_extraction
 
     def initialize
       @error_handlers = []
+      @address_name_extractor_class = ::SolidusSixSaferpay::AddressNameExtractor
+      @allow_unsafe_address_name_extraction = true
     end
   end
 

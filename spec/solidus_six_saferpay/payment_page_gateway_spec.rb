@@ -13,10 +13,26 @@ module SolidusSixSaferpay
       )
     end
 
-    let(:order) { create(:order, total: 100) }
+    let(:bill_address) { create(:address, name: 'John Billable') }
+    let(:ship_address) { create(:address, name: 'John Shippable' ) }
+    let(:order) { create(:order, bill_address: bill_address, ship_address: ship_address) }
     let(:payment_method) { create(:saferpay_payment_method) }
 
     describe '#initialize_payment' do
+      let(:variant_1) { create(:variant) }
+      let(:variant_2) { create(:variant, product: variant_1.product) }
+      let(:order) do
+        create(
+          :order_with_line_items,
+          line_items_attributes: [
+            { variant_id: variant_1.id, quantity: 1, price: 10 },
+            { variant_id: variant_2.id, quantity: 2, price: 20 }
+          ],
+          total: 100,
+          bill_address: bill_address,
+          ship_address: ship_address
+        )
+      end
       let(:api_initialize_response) do
         SixSaferpay::SixPaymentPage::InitializeResponse.new(
           response_header: SixSaferpay::ResponseHeader.new(request_id: 'request_id', spec_version: 'test'),
@@ -26,7 +42,7 @@ module SolidusSixSaferpay
         )
       end
 
-      it 'initializes a payment page payment' do
+      it 'initializes a payment page payment', :focus do
         allow(SixSaferpay::Client).to receive(:post).and_return(api_initialize_response)
 
         gateway.initialize_payment(order, payment_method)
@@ -39,11 +55,23 @@ module SolidusSixSaferpay
                 currency_code: order.currency
               )
             ),
+            order: having_attributes(
+              items: match_array([
+                having_attributes(type: 'PHYSICAL'),
+                anything
+              ])
+              # items: match_array(
+              #   [
+              #     having_attributes(type: 'PHYSICAL', variant_id: variant_1.id, name: variant_1.sku, quantity: 1, unit_price: 10),
+              #     having_attributes(type: 'PHYSICAL', variant_id: variant_2.id, name: variant_2.sku, quantity: 2, unit_price: 20)
+              #   ]
+              # )
+            ),
             payer: having_attributes(
               language_code: I18n.locale,
               billing_address: having_attributes(
-                first_name: order.billing_address.first_name,
-                last_name: order.billing_address.last_name,
+                first_name: 'John',
+                last_name: 'Billable',
                 date_of_birth: nil,
                 company: nil,
                 gender: nil,
@@ -58,8 +86,8 @@ module SolidusSixSaferpay
                 email: nil
               ),
               delivery_address: having_attributes(
-                first_name: order.shipping_address.first_name,
-                last_name: order.shipping_address.last_name,
+                first_name: 'John',
+                last_name: 'Shippable',
                 date_of_birth: nil,
                 company: nil,
                 gender: nil,
