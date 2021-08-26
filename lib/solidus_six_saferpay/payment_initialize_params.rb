@@ -1,7 +1,14 @@
 # frozen_string_literal: true
 
 module SolidusSixSaferpay
+  # Provide values for initializing saferpay payment
+  # This class can be overridden to override all or specific values by setting
+  # config.payment_initialize_params_class
+  #
+  #
   class PaymentInitializeParams
+    include Spree::Tax::TaxHelpers
+
     attr_reader :order, :payment_method, :return_urls
 
     def initialize(order, payment_method, return_urls)
@@ -23,6 +30,8 @@ module SolidusSixSaferpay
 
       initialize_params
     end
+
+    private
 
     def six_payment
       six_amount = Spree::Money.new(order.total, currency: order.currency)
@@ -62,16 +71,18 @@ module SolidusSixSaferpay
     end
 
     def six_order
-      six_items = order.line_items.map do |item|
-        variant = item.variant
+      six_items = order.line_items.map do |line_item|
+        variant = line_item.variant
 
         SixSaferpay::Item.new(
-          type: 'PHYSICAL',
-          id: item.id,
+          type: item_type(line_item),
+          id: variant.product_id,
           variant_id: variant.id,
           name: variant.sku,
-          quantity: item.quantity,
-          unit_price: item.total.to_i
+          quantity: line_item.quantity,
+          unit_price: Spree::Money.new(line_item.price, currency: order.currency).cents,
+          tax_rate: tax_rate(line_item),
+          tax_amount: Spree::Money.new(line_item.included_tax_total, currency: order.currency).cents
         )
       end
 
@@ -82,6 +93,28 @@ module SolidusSixSaferpay
 
     def extract_name(address)
       SolidusSixSaferpay.config.address_name_extractor_class.new(address)
+    end
+
+    def item_type(line_item)
+      SolidusSixSaferpay.config.line_item_type_deductor_class.new(line_item).type
+    end
+
+    # TODO: Conform to solidus standard or add warning
+    def tax_rate(line_item)
+      # from TaxHelpers module
+      tax_rates = rates_for_item(line_item)
+
+      if tax_rates.empty?
+        Rails.logger.warn "Error: No tax rate detected, can not determine tax rate for SixSaferpay Order Item of line item [#{line_item.order.number} #{line_item.id}]"
+        return 0
+      end
+
+      if tax_rates.length > 1
+        Rails.logger.warn "Error: Multiple tax rates detected, choosing first tax rate for SixSaferpay Order Item of line item [#{line_item.order.number} #{item.id}"
+      end
+
+      tax_rate = tax_rates.first
+      (tax_rate.amount * 1000).to_i
     end
   end
 end

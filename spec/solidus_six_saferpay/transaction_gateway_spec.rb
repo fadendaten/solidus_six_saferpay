@@ -32,61 +32,33 @@ module SolidusSixSaferpay
         )
       end
 
+      let(:params) do
+        {
+          payment: instance_double(SixSaferpay::Payment),
+          payer: instance_double(SixSaferpay::Payer),
+          order: instance_double(SixSaferpay::Order),
+          return_urls: instance_double(SixSaferpay::ReturnUrls)
+        }
+      end
+
+      let(:payment_initialize_params) { instance_double(SolidusSixSaferpay::PaymentInitializeParams, params: params) }
+      let(:payment_initialize_object) { instance_double(SixSaferpay::SixPaymentPage::Initialize) }
+
       it 'initializes a payment page payment' do
         allow(SixSaferpay::Client).to receive(:post).and_return(api_initialize_response)
+        allow(SixSaferpay::SixTransaction::Initialize).to receive(:new).and_return(payment_initialize_object)
+        allow(SolidusSixSaferpay::PaymentInitializeParams).to receive(:new).and_return(payment_initialize_params)
+
 
         gateway.initialize_payment(order, payment_method)
 
-        expect(SixSaferpay::Client).to have_received(:post).with(
-          having_attributes(
-            payment: having_attributes(
-              amount: having_attributes(
-                value: (order.total * 100),
-                currency_code: order.currency
-              )
-            ),
-            payer: having_attributes(
-              language_code: I18n.locale,
-              billing_address: having_attributes(
-                first_name: 'John',
-                last_name: 'Billable',
-                date_of_birth: nil,
-                company: nil,
-                gender: nil,
-                legal_form: nil,
-                street: order.billing_address.address1,
-                street2: order.billing_address.address2,
-                zip: order.billing_address.zipcode,
-                city: order.billing_address.city,
-                country_subdevision_code: nil,
-                country_code: order.billing_address.country.iso,
-                phone: nil,
-                email: nil
-              ),
-              delivery_address: having_attributes(
-                first_name: 'John',
-                last_name: 'Shippable',
-                date_of_birth: nil,
-                company: nil,
-                gender: nil,
-                legal_form: nil,
-                street: order.shipping_address.address1,
-                street2: order.shipping_address.address2,
-                zip: order.shipping_address.zipcode,
-                city: order.shipping_address.city,
-                country_subdevision_code: nil,
-                country_code: order.shipping_address.country.iso,
-                phone: nil,
-                email: nil
-              )
-            ),
-            return_urls: having_attributes(
-              success: solidus_six_saferpay_transaction_success_url(order),
-              fd_fail: solidus_six_saferpay_transaction_fail_url(order),
-              fd_abort: solidus_six_saferpay_transaction_fail_url(order)
-            )
-          )
+        expect(SolidusSixSaferpay::PaymentInitializeParams).to have_received(:new).with(
+          order,
+          payment_method,
+          instance_of(SixSaferpay::ReturnUrls)
         )
+        expect(SixSaferpay::SixTransaction::Initialize).to have_received(:new).with(params)
+        expect(SixSaferpay::Client).to have_received(:post).with(payment_initialize_object)
       end
 
       context 'when the payment initialization is successful' do

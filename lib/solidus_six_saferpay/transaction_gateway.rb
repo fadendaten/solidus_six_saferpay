@@ -34,16 +34,16 @@ module SolidusSixSaferpay
 
     private
 
-    def interface_initialize_object(order, payment_method)
-      SixSaferpay::SixTransaction::Initialize.new(interface_initialize_params(order, payment_method))
-    end
-
     def return_urls(order)
       SixSaferpay::ReturnUrls.new(
         success: url_helpers.solidus_six_saferpay_transaction_success_url(order.number),
         fd_fail: url_helpers.solidus_six_saferpay_transaction_fail_url(order.number),
         fd_abort: url_helpers.solidus_six_saferpay_transaction_fail_url(order.number)
       )
+    end
+
+    def interface_initialize_class
+      SixSaferpay::SixTransaction::Initialize
     end
   end
 end

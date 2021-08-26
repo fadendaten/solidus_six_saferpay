@@ -35,10 +35,6 @@ module SolidusSixSaferpay
 
     private
 
-    def interface_initialize_object(order, payment_method)
-      SixSaferpay::SixPaymentPage::Initialize.new(interface_initialize_params(order, payment_method))
-    end
-
     def return_urls(order)
       SixSaferpay::ReturnUrls.new(
         success: url_helpers.solidus_six_saferpay_payment_page_success_url(order.number),
@@ -50,6 +46,10 @@ module SolidusSixSaferpay
     def perform_assert_request(saferpay_payment, _options = {})
       payment_page_assert = SixSaferpay::SixPaymentPage::Assert.new(token: saferpay_payment.token)
       SixSaferpay::Client.post(payment_page_assert)
+    end
+
+    def interface_initialize_class
+      SixSaferpay::SixPaymentPage::Initialize
     end
   end
 end

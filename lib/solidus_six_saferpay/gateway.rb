@@ -17,9 +17,10 @@ module SolidusSixSaferpay
     end
 
     def initialize_payment(order, payment_method)
-      initialize_response = SixSaferpay::Client.post(
-        interface_initialize_object(order, payment_method)
+      initialize_object = interface_initialize_class.new(
+        interface_initialize_params(order, payment_method, return_urls(order))
       )
+      initialize_response = SixSaferpay::Client.post(initialize_object)
       response(
         true,
         "Saferpay Initialize Checkout response: #{initialize_response.to_h}",
@@ -106,12 +107,14 @@ module SolidusSixSaferpay
 
     private
 
-    def interface_initialize_object(_order, _payment_method)
-      raise NotImplementedError, "Must be implemented in PaymentPageGateway or TransactionGateway"
+    def interface_initialize_params(order, payment_method, return_urls)
+      SolidusSixSaferpay.config.payment_initialize_params_class.new(order, payment_method, return_urls).params
     end
 
-    def interface_initialize_params(order, payment_method)
-      PaymentInitializeParams.new(order, payment_method, return_urls(order)).params
+    # Must return one of the SixSaferpay Initialize object classes, at the moment this can be one of
+    # [SixSaferpay::SixPaymentPage::Initialize, SixSaferpay::SixTransaction::Initialize]
+    def interface_initialize_class
+      raise NotImplementedError, "Must be implemented in PaymentPageGateway or TransactionGateway"
     end
 
     def return_urls(_order)

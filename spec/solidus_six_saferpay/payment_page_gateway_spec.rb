@@ -19,20 +19,6 @@ module SolidusSixSaferpay
     let(:payment_method) { create(:saferpay_payment_method) }
 
     describe '#initialize_payment' do
-      let(:variant_1) { create(:variant) }
-      let(:variant_2) { create(:variant, product: variant_1.product) }
-      let(:order) do
-        create(
-          :order_with_line_items,
-          line_items_attributes: [
-            { variant_id: variant_1.id, quantity: 1, price: 10 },
-            { variant_id: variant_2.id, quantity: 2, price: 20 }
-          ],
-          total: 100,
-          bill_address: bill_address,
-          ship_address: ship_address
-        )
-      end
       let(:api_initialize_response) do
         SixSaferpay::SixPaymentPage::InitializeResponse.new(
           response_header: SixSaferpay::ResponseHeader.new(request_id: 'request_id', spec_version: 'test'),
@@ -42,73 +28,33 @@ module SolidusSixSaferpay
         )
       end
 
-      it 'initializes a payment page payment', :focus do
+
+      let(:params) do
+        {
+          payment: instance_double(SixSaferpay::Payment),
+          payer: instance_double(SixSaferpay::Payer),
+          order: instance_double(SixSaferpay::Order),
+          return_urls: instance_double(SixSaferpay::ReturnUrls)
+        }
+      end
+
+      let(:payment_initialize_params) { instance_double(SolidusSixSaferpay::PaymentInitializeParams, params: params) }
+      let(:payment_initialize_object) { instance_double(SixSaferpay::SixPaymentPage::Initialize) }
+
+      it 'initializes a payment page payment' do
         allow(SixSaferpay::Client).to receive(:post).and_return(api_initialize_response)
+        allow(SixSaferpay::SixPaymentPage::Initialize).to receive(:new).and_return(payment_initialize_object)
+        allow(SolidusSixSaferpay::PaymentInitializeParams).to receive(:new).and_return(payment_initialize_params)
 
         gateway.initialize_payment(order, payment_method)
 
-        expect(SixSaferpay::Client).to have_received(:post).with(
-          having_attributes(
-            payment: having_attributes(
-              amount: having_attributes(
-                value: (order.total * 100),
-                currency_code: order.currency
-              )
-            ),
-            order: having_attributes(
-              items: match_array([
-                having_attributes(type: 'PHYSICAL'),
-                anything
-              ])
-              # items: match_array(
-              #   [
-              #     having_attributes(type: 'PHYSICAL', variant_id: variant_1.id, name: variant_1.sku, quantity: 1, unit_price: 10),
-              #     having_attributes(type: 'PHYSICAL', variant_id: variant_2.id, name: variant_2.sku, quantity: 2, unit_price: 20)
-              #   ]
-              # )
-            ),
-            payer: having_attributes(
-              language_code: I18n.locale,
-              billing_address: having_attributes(
-                first_name: 'John',
-                last_name: 'Billable',
-                date_of_birth: nil,
-                company: nil,
-                gender: nil,
-                legal_form: nil,
-                street: order.billing_address.address1,
-                street2: order.billing_address.address2,
-                zip: order.billing_address.zipcode,
-                city: order.billing_address.city,
-                country_subdevision_code: nil,
-                country_code: order.billing_address.country.iso,
-                phone: nil,
-                email: nil
-              ),
-              delivery_address: having_attributes(
-                first_name: 'John',
-                last_name: 'Shippable',
-                date_of_birth: nil,
-                company: nil,
-                gender: nil,
-                legal_form: nil,
-                street: order.shipping_address.address1,
-                street2: order.shipping_address.address2,
-                zip: order.shipping_address.zipcode,
-                city: order.shipping_address.city,
-                country_subdevision_code: nil,
-                country_code: order.shipping_address.country.iso,
-                phone: nil,
-                email: nil
-              )
-            ),
-            return_urls: having_attributes(
-              success: solidus_six_saferpay_payment_page_success_url(order),
-              fd_fail: solidus_six_saferpay_payment_page_fail_url(order),
-              fd_abort: solidus_six_saferpay_payment_page_fail_url(order)
-            )
-          )
+        expect(SolidusSixSaferpay::PaymentInitializeParams).to have_received(:new).with(
+          order,
+          payment_method,
+          instance_of(SixSaferpay::ReturnUrls)
         )
+        expect(SixSaferpay::SixPaymentPage::Initialize).to have_received(:new).with(params)
+        expect(SixSaferpay::Client).to have_received(:post).with(payment_initialize_object)
       end
 
       context 'when the payment initialization is successful' do
