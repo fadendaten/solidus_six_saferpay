@@ -57,7 +57,7 @@ Spree::Core::Engine.routes.default_url_options { 'https://url-to-your-solidus-sh
 
 After adding the `solidus_six_saferpay` gem to your Solidus Rails app, you can create new payment methods `Saferpay Payment Page` and `Saferpay Transaction` in the admin backend under "Settings" > "Payment". When adding a new Saferpay payment method, you can configure the payment method with the information you have received from SIX when creating a new test account.
 
-### Configuration Options
+### Configuration Options available in Solidus Admin
 
 Notable configuration options are:
 
@@ -96,6 +96,11 @@ If you want to display the masked number on the confirm page, you must override 
   <%= content_tag(:span, payment.payment_method.name) %>
 <% end %>
 ```
+
+### Extending/Overriding Functionality
+
+There are several options for extending or overriding default behaviour such as the params used for initializing a payment or the type of items provided.
+To configure this functionality, take a look at `SolidusSixSaferpay::Configuration` and start from there.
 
 ## Technical Details: How it works
 
