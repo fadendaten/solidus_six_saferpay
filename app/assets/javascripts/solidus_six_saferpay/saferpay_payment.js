@@ -28,7 +28,6 @@ let SaferpayPayment = {
   },
 
   loadIframe: function(callbackParams, redirectUrl) {
-    debugger;
     containerId = callbackParams.containerId;
     $(".saferpay-iframe").not(containerId).addClass("loading-animation");
     $(".saferpay-iframe").not(containerId).attr("src", "");
@@ -36,8 +35,6 @@ let SaferpayPayment = {
     $(containerId).attr('src', redirectUrl);
 
     $(window).bind("message", function(e) {
-      debugger;
-
       if (e.originalEvent.data.height <= 450) {
         return;
       }
@@ -64,8 +61,6 @@ let SaferpayPayment = {
 
 
   prepareForIframePayment: function(paymentMethod) {
-    debugger;
-    console.log("DANI");
     this.disableFormSubmit();
     this.getRedirectUrl(paymentMethod.id, paymentMethod.initUrl, { containerId: paymentMethod.containerId }, this.loadIframe);
   },
