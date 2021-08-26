@@ -2,6 +2,14 @@ require 'rails_helper'
 
 module SolidusSixSaferpay
   RSpec.describe PaymentInitializeParams do
+    subject(:service) do
+      described_class.new(
+        order,
+        payment_method,
+        return_urls,
+      )
+    end
+
     let(:bill_address) { create(:address, name: 'John Billable') }
     let(:ship_address) { create(:address, name: 'John Shippable' ) }
     let(:variant_1) { create(:variant) }
@@ -20,14 +28,6 @@ module SolidusSixSaferpay
     end
     let(:payment_method) { create(:saferpay_payment_method) }
     let(:return_urls) { SixSaferpay::ReturnUrls.new(success: 'success', fd_fail: 'fail', fd_abort: 'abort') }
-
-    subject(:service) do
-      described_class.new(
-        order,
-        payment_method,
-        return_urls,
-      )
-    end
 
     describe '#params' do
       it 'returns params required to initialize a six saferpay payment' do

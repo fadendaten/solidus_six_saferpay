@@ -136,6 +136,5 @@ module SolidusSixSaferpay
         error_name: error.error_name
       )
     end
-
   end
 end

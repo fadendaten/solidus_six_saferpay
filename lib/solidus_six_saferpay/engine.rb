@@ -13,7 +13,6 @@ module SolidusSixSaferpay
 
     isolate_namespace ::Spree
 
-
     config.autoload_paths << "#{config.root}/lib"
 
     # config.autoload_paths += Dir["#{config.root}/lib/**/"]
@@ -31,7 +30,7 @@ module SolidusSixSaferpay
 
     # remove original activate method
     def self.activate
-      Dir.glob(File.join(root, "app/**/*_decorator*.rb")) do |c|
+      Dir.glob(File.join(root, "app/**/*_decorator*.rb")).sort.each do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
       end
     end
@@ -39,4 +38,3 @@ module SolidusSixSaferpay
     config.to_prepare(&method(:activate).to_proc)
   end
 end
-

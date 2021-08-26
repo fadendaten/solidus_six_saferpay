@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :six_saferpay_payment, class: 'Spree::SixSaferpayPayment' do
     order

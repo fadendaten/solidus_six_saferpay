@@ -2,11 +2,8 @@
 
 module SolidusSixSaferpay
   class Configuration
-    attr_accessor :error_handlers
-    attr_accessor :address_name_extractor_class
-    attr_accessor :allow_unsafe_address_name_extraction
-    attr_accessor :payment_initialize_params_class
-    attr_accessor :line_item_type_deductor_class
+    attr_accessor :error_handlers, :address_name_extractor_class, :allow_unsafe_address_name_extraction,
+      :payment_initialize_params_class, :line_item_type_deductor_class
 
     def initialize
       @error_handlers = []

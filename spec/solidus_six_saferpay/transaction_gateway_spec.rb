@@ -49,7 +49,6 @@ module SolidusSixSaferpay
         allow(SixSaferpay::SixTransaction::Initialize).to receive(:new).and_return(payment_initialize_object)
         allow(SolidusSixSaferpay::PaymentInitializeParams).to receive(:new).and_return(payment_initialize_params)
 
-
         gateway.initialize_payment(order, payment_method)
 
         expect(SolidusSixSaferpay::PaymentInitializeParams).to have_received(:new).with(

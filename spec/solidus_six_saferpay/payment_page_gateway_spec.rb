@@ -28,7 +28,6 @@ module SolidusSixSaferpay
         )
       end
 
-
       let(:params) do
         {
           payment: instance_double(SixSaferpay::Payment),

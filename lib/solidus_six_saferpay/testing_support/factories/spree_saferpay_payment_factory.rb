@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :payment_using_saferpay, class: 'Spree::Payment' do
     association(:payment_method, factory: :saferpay_payment_method)

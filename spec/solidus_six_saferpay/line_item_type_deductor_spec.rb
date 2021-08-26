@@ -1,7 +1,8 @@
 module SolidusSixSaferpay
   RSpec.describe LineItemTypeDeductor do
-    let(:line_item) { instance_double(Spree::LineItem) }
     subject(:service) { described_class.new(line_item) }
+
+    let(:line_item) { instance_double(Spree::LineItem) }
 
     describe '#type' do
       it 'always returns "PHYSICAL"' do
