@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Spree
   module SolidusSixSaferpay
     class InitializePayment
-
       attr_reader :order, :payment_method, :redirect_url, :success
 
       def self.call(order, payment_method)
@@ -33,7 +34,10 @@ module Spree
       end
 
       def gateway
-        raise NotImplementedError, "Must be implemented in InitializePaymentPage or InitializeTransaction by including UsePaymentPageGateway or UseTransactionGateway"
+        raise NotImplementedError,
+          "Must be implemented in InitializePaymentPage or" \
+          "InitializeTransaction by including UsePaymentPageGateway or" \
+          "UseTransactionGateway"
       end
 
       private
@@ -47,7 +51,7 @@ module Spree
           order: order,
           payment_method: payment_method,
           token: api_response.token,
-          expiration: DateTime.parse(api_response.expiration),
+          expiration: DateTime.parse(api_response.expiration).in_time_zone(Time.zone),
           response_hash: api_response.to_h
         }
       end

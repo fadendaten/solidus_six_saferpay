@@ -1,15 +1,15 @@
 class CreateSixSaferpayPayments < ActiveRecord::Migration[5.1]
   def change
     create_table :spree_six_saferpay_payments do |t|
-      t.references :order
-      t.references :payment_method
+      t.integer :order_id
+      t.integer :payment_method_id
 
       t.string :token
       t.datetime :expiration
       t.string :redirect_url
       t.string :transaction_id
       t.string :transaction_status
-      t.datetime :transaction_date
+      t.datetime :transaction_date, limit: 6
       t.string :six_transaction_reference
       t.string :display_text
       t.string :masked_number
