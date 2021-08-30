@@ -14,6 +14,8 @@ gem 'rails', '>0.a'
 # Provides basic authentication functionality for testing parts of your engine
 gem 'solidus_auth_devise'
 
+gem 'six_saferpay', git: 'https://github.com/fadendaten/six_saferpay', branch: 'relax-activesupport-dependency'
+
 case ENV['DB']
 when 'mysql'
   gem 'mysql2'
