@@ -21,6 +21,9 @@ module SolidusSixSaferpay
     private
 
     def extract_names(address)
+      # Address::Name has been introduced in 2.11
+      return address if Spree.solidus_gem_version <= Gem::Version.new('2.10')
+
       if address.respond_to?(:first_name)
         Spree::Address::Name.new(address.first_name, address.last_name)
       elsif address.respond_to?(:firstname)
