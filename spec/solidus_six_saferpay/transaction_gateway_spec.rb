@@ -13,9 +13,7 @@ module SolidusSixSaferpay
       )
     end
 
-    let(:bill_address) { create(:address, name: 'John Billable') }
-    let(:ship_address) { create(:address, name: 'John Shippable' ) }
-    let(:order) { create(:order, total: 100, bill_address: bill_address, ship_address: ship_address) }
+    let(:order) { create(:order, total: 100) }
     let(:payment_method) { create(:saferpay_payment_method) }
 
     describe '#initialize_payment' do
@@ -32,16 +30,17 @@ module SolidusSixSaferpay
         )
       end
 
-      let(:params) do
-        {
-          payment: instance_double(SixSaferpay::Payment),
-          payer: instance_double(SixSaferpay::Payer),
-          order: instance_double(SixSaferpay::Order),
-          return_urls: instance_double(SixSaferpay::ReturnUrls)
-        }
+      let(:payment_initialize_params) do
+        instance_double(
+          SolidusSixSaferpay::PaymentInitializeParams, params: {
+            payment: instance_double(SixSaferpay::Payment),
+            payer: instance_double(SixSaferpay::Payer),
+            order: instance_double(SixSaferpay::Order),
+            return_urls: instance_double(SixSaferpay::ReturnUrls)
+          }
+        )
       end
 
-      let(:payment_initialize_params) { instance_double(SolidusSixSaferpay::PaymentInitializeParams, params: params) }
       let(:payment_initialize_object) { instance_double(SixSaferpay::SixPaymentPage::Initialize) }
 
       it 'initializes a payment page payment' do
@@ -51,12 +50,6 @@ module SolidusSixSaferpay
 
         gateway.initialize_payment(order, payment_method)
 
-        expect(SolidusSixSaferpay::PaymentInitializeParams).to have_received(:new).with(
-          order,
-          payment_method,
-          instance_of(SixSaferpay::ReturnUrls)
-        )
-        expect(SixSaferpay::SixTransaction::Initialize).to have_received(:new).with(params)
         expect(SixSaferpay::Client).to have_received(:post).with(payment_initialize_object)
       end
 
@@ -75,17 +68,15 @@ module SolidusSixSaferpay
       end
 
       context 'when the API raises an error' do
-        let(:six_saferpay_error) do
-          SixSaferpay::Error.new(
-            response_header: SixSaferpay::ResponseHeader.new(request_id: 'request_id', spec_version: 'test'),
-            behavior: 'ABORT',
-            error_name: 'INVALID_TRANSACTION',
-            error_message: 'error_message'
-          )
-        end
-
         before do
-          allow(SixSaferpay::Client).to receive(:post).and_raise(six_saferpay_error)
+          allow(SixSaferpay::Client).to receive(:post).and_raise(
+            SixSaferpay::Error.new(
+              response_header: SixSaferpay::ResponseHeader.new(request_id: 'request_id', spec_version: 'test'),
+              behavior: 'ABORT',
+              error_name: 'INVALID_TRANSACTION',
+              error_message: 'error_message'
+            )
+          )
         end
 
         it 'handles the error gracefully' do

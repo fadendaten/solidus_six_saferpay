@@ -105,12 +105,14 @@ module SolidusSixSaferpay
       tax_rates = rates_for_item(line_item)
 
       if tax_rates.empty?
-        Rails.logger.warn "Error: No tax rate detected, can not determine tax rate for SixSaferpay Order Item of line item [#{line_item.order.number} #{line_item.id}]"
+        Rails.logger.warn "Error: No tax rate detected, can not determine tax rate " \
+          "of line item [#{line_item.order.number} #{line_item.id}]"
         return 0
       end
 
       if tax_rates.length > 1
-        Rails.logger.warn "Error: Multiple tax rates detected, choosing first tax rate for SixSaferpay Order Item of line item [#{line_item.order.number} #{item.id}"
+        Rails.logger.warn "Error: Multiple tax rates detected, choosing first tax rate " \
+          "of line item [#{line_item.order.number} #{item.id}"
       end
 
       tax_rate = tax_rates.first
