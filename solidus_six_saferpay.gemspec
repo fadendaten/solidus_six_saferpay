@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.metadata['source_code_uri'] = 'https://github.com/fadendaten/solidus_six_saferpay'
   spec.metadata['changelog_uri'] = 'https://github.com/fadendaten/solidus_six_saferpay/blob/master/CHANGELOG.md'
 
-  spec.required_ruby_version = Gem::Requirement.new('~> 2.6')
+  spec.required_ruby_version = Gem::Requirement.new('~> 2.5')
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -37,6 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry', '~> 0.14'
   spec.add_development_dependency 'rails-controller-testing', '~> 1.0', '>= 1.0.4'
   spec.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
-  spec.add_development_dependency 'shoulda-matchers', '~> 5.0.0'
+  spec.add_development_dependency 'shoulda-matchers', '~> 4.5.0'
   spec.add_development_dependency 'solidus_dev_support', '~> 2.5'
 end
