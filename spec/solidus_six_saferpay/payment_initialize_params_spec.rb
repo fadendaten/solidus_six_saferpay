@@ -10,20 +10,18 @@ module SolidusSixSaferpay
       )
     end
 
-    let(:bill_address) { create(:address, name: 'John Billable') }
-    let(:ship_address) { create(:address, name: 'John Shippable' ) }
-    let(:variant_1) { create(:variant) }
-    let(:variant_2) { create(:variant, product: variant_1.product) }
+    let(:variant1) { create(:variant) }
+    let(:variant2) { create(:variant, product: variant1.product) }
     let(:order) do
       create(
         :order_with_line_items,
         line_items_attributes: [
-          { variant_id: variant_1.id, quantity: 1, price: 10 },
-          { variant_id: variant_2.id, quantity: 2, price: 20 }
+          { variant_id: variant1.id, quantity: 1, price: 10 },
+          { variant_id: variant2.id, quantity: 2, price: 20 }
         ],
         total: 50,
-        bill_address: bill_address,
-        ship_address: ship_address
+        bill_address: create(:address, name: 'John Billable'),
+        ship_address: create(:address, name: 'John Shippable'),
       )
     end
     let(:payment_method) { create(:saferpay_payment_method) }
@@ -31,10 +29,6 @@ module SolidusSixSaferpay
 
     describe '#params' do
       it 'returns params required to initialize a six saferpay payment' do
-        expect(service.params[:order]).to match(anything)
-        expect(service.params[:payer]).to match(anything)
-        expect(service.params[:return_urls]).to match(anything)
-
         expect(service.params).to match({
           payment: having_attributes(
             amount: having_attributes(
@@ -46,9 +40,9 @@ module SolidusSixSaferpay
             items: match_array([
               having_attributes(
                 type: 'PHYSICAL',
-                id: variant_1.product_id,
-                variant_id: variant_1.id,
-                name: variant_1.sku,
+                id: variant1.product_id,
+                variant_id: variant1.id,
+                name: variant1.sku,
                 quantity: 1,
                 unit_price: 1000,
                 tax_rate: 0,
@@ -56,9 +50,9 @@ module SolidusSixSaferpay
               ),
               having_attributes(
                 type: 'PHYSICAL',
-                id: variant_2.product_id,
-                variant_id: variant_2.id,
-                name: variant_2.sku,
+                id: variant2.product_id,
+                variant_id: variant2.id,
+                name: variant2.sku,
                 quantity: 2,
                 unit_price: 2000,
                 tax_rate: 0,

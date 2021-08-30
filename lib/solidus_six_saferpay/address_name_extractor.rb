@@ -5,7 +5,7 @@ module SolidusSixSaferpay
     attr_reader :address_name
 
     def initialize(address)
-      @address_name = address_name(address)
+      @address_name = extract_names(address)
     end
 
     def first_name
@@ -20,7 +20,7 @@ module SolidusSixSaferpay
 
     private
 
-    def address_name(address)
+    def extract_names(address)
       if address.respond_to?(:first_name)
         Spree::Address::Name.new(address.first_name, address.last_name)
       elsif address.respond_to?(:firstname)
