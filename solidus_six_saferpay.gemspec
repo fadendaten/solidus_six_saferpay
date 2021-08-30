@@ -37,6 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry', '~> 0.14'
   spec.add_development_dependency 'rails-controller-testing', '~> 1.0', '>= 1.0.4'
   spec.add_development_dependency 'rubocop', '~> 1.18', '>= 1.18.3'
-  spec.add_development_dependency 'shoulda-matchers', '~> 5.0.0'
+  spec.add_development_dependency 'shoulda-matchers', '~> 4.5.0'
   spec.add_development_dependency 'solidus_dev_support', '~> 2.5'
 end
