@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Spree
   module SolidusSixSaferpay
     class ProcessAuthorizedPayment
-
       attr_reader :saferpay_payment, :order, :success, :user_message
 
       def self.call(saferpay_payment)
@@ -25,7 +26,6 @@ module Spree
         @success = true
 
         self
-
       rescue ::SolidusSixSaferpay::InvalidSaferpayPayment => e
         cancel_saferpay_payment
         @user_message = e.full_message
@@ -50,23 +50,21 @@ module Spree
 
       # Cancels only the saferpay payment without affecting solidus
       def cancel_saferpay_payment
-        if transaction_id = saferpay_payment.transaction_id
-          gateway.void(transaction_id)
-        end
+        return unless transaction_id = saferpay_payment.transaction_id
+
+        gateway.void(transaction_id)
       end
 
       # Cancels the solidus payments which automatically cancels the saferpay
       # payments
       def cancel_old_solidus_payments
-        solidus_payments_to_cancel.each do |payment|
-          # void or create refund
-          payment.cancel!
-        end
+        solidus_payments_to_cancel.each(&:cancel!)
       end
 
       def check_liability_shift_requirements!
-        if require_liability_shift? && !liability_shifted?
-          raise ::SolidusSixSaferpay::InvalidSaferpayPayment.new(details: I18n.t(:liability_shift_not_granted, scope: [:solidus_six_saferpay, :errors]))
+        if require_liability_shift? && !liability_shifted? # rubocop:disable Style/GuardClause
+          raise ::SolidusSixSaferpay::InvalidSaferpayPayment.new(details: I18n.t(:liability_shift_not_granted,
+            scope: [:solidus_six_saferpay, :errors]))
         end
       end
 

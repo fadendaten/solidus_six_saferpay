@@ -3,26 +3,33 @@ require 'rails_helper'
 module Spree
   module SolidusSixSaferpay
     RSpec.describe OrderNotFoundHandler do
+      subject(:handler) { described_class.new(controller_context: controller, order_number: order_number) }
 
-      let(:controller) { instance_double(SolidusSixSaferpay::CheckoutController) }
+      let(:controller) { instance_double('SolidusSixSaferpay::CheckoutController') }
       let(:order_number) { "R123445678" }
-
-      subject { described_class.new(controller_context: controller, order_number: order_number) }
 
       describe '.call' do
         it 'calls a new instance with given parameters' do
-          expect(described_class).to receive(:new).with(controller_context: controller, order_number: order_number).and_return(subject)
-          expect(subject).to receive(:call)
+          allow(described_class).to receive(:new).with(
+            controller_context: controller,
+            order_number: order_number
+          ).and_return(handler)
+
+          allow(handler).to receive(:call)
 
           described_class.call(controller_context: controller, order_number: order_number)
+
+          expect(handler).to have_received(:call)
         end
       end
 
       describe '#call' do
         it 'informs about the error' do
-          expect(::SolidusSixSaferpay::ErrorHandler).to receive(:handle).with(instance_of(StandardError))
+          allow(::SolidusSixSaferpay::ErrorHandler).to receive(:handle)
 
-          subject.call
+          handler.call
+
+          expect(::SolidusSixSaferpay::ErrorHandler).to have_received(:handle).with(instance_of(StandardError))
         end
       end
     end
