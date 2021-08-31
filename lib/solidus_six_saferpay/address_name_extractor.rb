@@ -21,6 +21,8 @@ module SolidusSixSaferpay
     private
 
     def extract_names(address)
+      return address unless SolidusSupport.combined_first_and_last_name_in_address?
+
       if address.respond_to?(:first_name)
         Spree::Address::Name.new(address.first_name, address.last_name)
       elsif address.respond_to?(:firstname)
@@ -30,11 +32,6 @@ module SolidusSixSaferpay
       else
         raise "Unable to safely extract first- and lastname from address"
       end
-    rescue NameError => e
-      # Address::Name has been introduced in 2.11
-      return address if Spree.solidus_gem_version <= Gem::Version.new('2.10')
-
-      raise e
     end
   end
 end

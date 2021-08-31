@@ -20,8 +20,8 @@ module SolidusSixSaferpay
           { variant_id: variant2.id, quantity: 2, price: 20 }
         ],
         total: 50,
-        bill_address: create(:address, name: 'John Billable'),
-        ship_address: create(:address, name: 'John Shippable')
+        bill_address: create(:bill_address),
+        ship_address: create(:ship_address)
       )
     end
     let(:payment_method) { create(:saferpay_payment_method) }
@@ -64,7 +64,7 @@ module SolidusSixSaferpay
             language_code: I18n.locale,
             billing_address: having_attributes(
               first_name: 'John',
-              last_name: 'Billable',
+              last_name: nil,
               date_of_birth: nil,
               company: nil,
               gender: nil,
@@ -80,7 +80,7 @@ module SolidusSixSaferpay
             ),
             delivery_address: having_attributes(
               first_name: 'John',
-              last_name: 'Shippable',
+              last_name: nil,
               date_of_birth: nil,
               company: nil,
               gender: nil,
