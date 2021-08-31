@@ -99,7 +99,6 @@ module SolidusSixSaferpay
       SolidusSixSaferpay.config.line_item_type_deductor_class.new(line_item).type
     end
 
-    # TODO: Conform to solidus standard or add warning
     def tax_rate(line_item)
       # from TaxHelpers module
       tax_rates = rates_for_item(line_item)
