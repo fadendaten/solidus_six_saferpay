@@ -34,7 +34,7 @@ module SolidusSixSaferpay
       # Address::Name has been introduced in 2.11
       return address if Spree.solidus_gem_version <= Gem::Version.new('2.10')
 
-      throw e
+      raise e
     end
   end
 end
