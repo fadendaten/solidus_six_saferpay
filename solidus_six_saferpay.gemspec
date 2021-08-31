@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'rails-i18n', '~> 6.0'
-  spec.add_dependency 'six_saferpay', '~> 2.8.3'
+  spec.add_dependency 'six_saferpay', '~> 2.8.4'
   spec.add_dependency 'solidus_core', ['>= 2.0.0', '< 4']
   spec.add_dependency 'solidus_support', '~> 0.8.1'
 
