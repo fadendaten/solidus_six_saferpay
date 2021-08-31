@@ -5,13 +5,29 @@ module SolidusSixSaferpay
     subject(:service) do
       described_class.new(
         order,
-        payment_method,
-        return_urls,
+        create(:saferpay_payment_method),
+        SixSaferpay::ReturnUrls.new(success: 'success', fd_fail: 'fail', fd_abort: 'abort')
       )
     end
 
     let(:variant1) { create(:variant) }
     let(:variant2) { create(:variant, product: variant1.product) }
+
+    let(:bill_address) do
+      if SolidusSupport.combined_first_and_last_name_in_address?
+        create(:bill_address, name: 'John Von Doe')
+      else
+        create(:bill_address, firstname: 'John', lastname: 'Von Doe')
+      end
+    end
+    let(:ship_address) do
+      if SolidusSupport.combined_first_and_last_name_in_address?
+        create(:ship_address, name: 'John Ship Doe')
+      else
+        create(:ship_address, firstname: 'John', lastname: 'Ship Doe')
+      end
+    end
+
     let(:order) do
       create(
         :order_with_line_items,
@@ -20,12 +36,10 @@ module SolidusSixSaferpay
           { variant_id: variant2.id, quantity: 2, price: 20 }
         ],
         total: 50,
-        bill_address: create(:bill_address),
-        ship_address: create(:ship_address)
+        bill_address: bill_address,
+        ship_address: ship_address,
       )
     end
-    let(:payment_method) { create(:saferpay_payment_method) }
-    let(:return_urls) { SixSaferpay::ReturnUrls.new(success: 'success', fd_fail: 'fail', fd_abort: 'abort') }
 
     describe '#params' do
       it 'returns params required to initialize a six saferpay payment' do
@@ -64,7 +78,7 @@ module SolidusSixSaferpay
             language_code: I18n.locale,
             billing_address: having_attributes(
               first_name: 'John',
-              last_name: nil,
+              last_name: 'Von Doe',
               date_of_birth: nil,
               company: nil,
               gender: nil,
@@ -80,7 +94,7 @@ module SolidusSixSaferpay
             ),
             delivery_address: having_attributes(
               first_name: 'John',
-              last_name: nil,
+              last_name: 'Ship Doe',
               date_of_birth: nil,
               company: nil,
               gender: nil,
