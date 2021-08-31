@@ -82,8 +82,10 @@ module SolidusSixSaferpay
         end
       end
 
-      context 'when unsafe name extraction from combined names is disabled' do
+      context 'when unsafe name extraction from combined names is disabled for addresses without first- and lastname' do
         before do
+          allow(address).to receive(:respond_to?).with(:first_name).and_return(false)
+          allow(address).to receive(:respond_to?).with(:firstname).and_return(false)
           allow(SolidusSixSaferpay.config).to receive(:allow_unsafe_address_name_extraction).and_return(false)
         end
 
