@@ -2,6 +2,9 @@
 
 module SolidusSixSaferpay
   class AddressNameExtractor
+    class UnsafeNameExtractionError < StandardError
+    end
+
     attr_reader :address_name
 
     def initialize(address)
@@ -26,11 +29,11 @@ module SolidusSixSaferpay
       if address.respond_to?(:first_name)
         Spree::Address::Name.new(address.first_name, address.last_name)
       elsif address.respond_to?(:firstname)
-        Spree::Address::Name.new(address.first_name, address.last_name)
+        Spree::Address::Name.new(address.firstname, address.lastname)
       elsif SolidusSixSaferpay.config.allow_unsafe_address_name_extraction
         Spree::Address::Name.new(address.name)
       else
-        raise "Unable to safely extract first- and lastname from address"
+        raise UnsafeNameExtractionError, "Unable to safely extract first- and lastname from address #{address.id}"
       end
     end
   end
