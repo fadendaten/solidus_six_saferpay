@@ -1,27 +1,21 @@
 # frozen_string_literal: true
 
-require 'spree/core'
+require 'solidus_core'
+require 'solidus_support'
+
+require 'six_saferpay'
+
 module SolidusSixSaferpay
-
-  def self.config
-    @config ||= Configuration.new
-  end
-
-  def self.configure
-    yield config
-  end
-
   class Engine < Rails::Engine
-    include SolidusSupport::EngineExtensions::Decorators
+    include SolidusSupport::EngineExtensions
 
     isolate_namespace ::Spree
 
     engine_name 'solidus_six_saferpay'
 
-    config.autoload_paths += Dir["#{config.root}/lib/**/"]
-    config.eager_load_paths += Dir["#{config.root}/lib/**/"]
+    config.autoload_paths << "#{config.root}/lib"
 
-    initializer "spree.six_payment.payment_methods", :after => "spree.register.payment_methods" do |app|
+    initializer "spree.six_payment.payment_methods", after: "spree.register.payment_methods" do |app|
       app.config.spree.payment_methods << Spree::PaymentMethod::SaferpayPaymentPage
       app.config.spree.payment_methods << Spree::PaymentMethod::SaferpayTransaction
     end

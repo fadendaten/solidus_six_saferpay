@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 module Spree
   module SolidusSixSaferpay
     module PaymentPage
-      # explicit parent must be stated, otherwise Spree::CheckoutController has precendence
+      # explicit parent must be stated, otherwise Spree::CheckoutController has precedence
       class CheckoutController < SolidusSixSaferpay::CheckoutController
-
         private
 
         def initialize_payment(order, payment_method)

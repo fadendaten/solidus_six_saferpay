@@ -34,7 +34,7 @@ let SaferpayPayment = {
     $(containerId).removeClass('loading-animation');
     $(containerId).attr('src', redirectUrl);
 
-    $(window).bind("message", function (e) {
+    $(window).bind("message", function(e) {
       if (e.originalEvent.data.height <= 450) {
         return;
       }
