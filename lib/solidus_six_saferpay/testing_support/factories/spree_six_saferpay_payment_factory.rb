@@ -10,7 +10,7 @@ FactoryBot.define do
     trait :authorized do
       sequence(:transaction_id) { |n| "TRANSACTION_ID_#{n}" }
       transaction_status { "AUTHORIZED" }
-      transaction_date { DateTime.parse("2019-07-25T13:34:44.677+02:00").in_time_zone(Time.zone) }
+      transaction_date { DateTime.parse("2019-07-25T13:34:44.677+02:00") }
       sequence(:six_transaction_reference) { |n| "SIX_TRANSACTION_REFERENCE_#{n}" }
       display_text { "xxxx xxxx xxxx 1234" }
 

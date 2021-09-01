@@ -82,7 +82,7 @@ RSpec.shared_examples 'inquire_payment' do
 
     it 'updates the transaction date' do
       expect { subject.call }.to change(payment, :transaction_date).from(nil).to(
-        DateTime.parse("2015-01-30T12:45:22.258+01:00").in_time_zone(Time.zone)
+        DateTime.parse("2015-01-30T12:45:22.258+01:00")
       )
     end
 

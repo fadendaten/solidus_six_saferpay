@@ -53,7 +53,7 @@ module Spree
         attributes = {
           transaction_id: saferpay_response.transaction.id,
           transaction_status: saferpay_response.transaction.status,
-          transaction_date: DateTime.parse(saferpay_response.transaction.date).in_time_zone(Time.zone),
+          transaction_date: DateTime.parse(saferpay_response.transaction.date),
           six_transaction_reference: saferpay_response.transaction.six_transaction_reference,
           display_text: saferpay_response.payment_means.display_text,
           response_hash: saferpay_response.to_h
