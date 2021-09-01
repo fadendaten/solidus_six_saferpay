@@ -2,7 +2,7 @@ require 'rails_helper'
 
 module Spree
   RSpec.describe SixSaferpayPayment, type: :model do
-    subject(:payment) { FactoryBot.create(:six_saferpay_payment) }
+    subject(:payment) { create(:six_saferpay_payment) }
 
     describe 'associations' do
       it { is_expected.to belong_to :order }
@@ -12,6 +12,20 @@ module Spree
     describe 'validations' do
       it { is_expected.to validate_presence_of :token }
       it { is_expected.to validate_presence_of :expiration }
+    end
+
+    describe '.current_payment' do
+      let(:old_payment) { create(:six_saferpay_payment, order: payment.order, created_at: payment.created_at - 1.hour) }
+      let(:new_payment) { create(:six_saferpay_payment, order: payment.order) }
+
+      before do
+        old_payment
+        new_payment
+      end
+
+      it 'returns the last saferpay payment for given order' do
+        expect(described_class.current_payment(payment.order)).to eq(new_payment)
+      end
     end
 
     describe "#create_solidus_payment!" do

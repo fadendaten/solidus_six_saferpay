@@ -63,7 +63,7 @@ module Spree
           return
         end
 
-        saferpay_payment = Spree::SixSaferpayPayment.where(order_id: @order.id).order(:created_at).last
+        saferpay_payment = Spree::SixSaferpayPayment.current_payment(order)
 
         if saferpay_payment.nil?
           PaymentNotFoundHandler.call(controller_context: self, order: @order)
