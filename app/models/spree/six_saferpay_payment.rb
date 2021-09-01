@@ -24,7 +24,7 @@ module Spree
     validates :token, :transaction_id, :six_transaction_reference, uniqueness: true, allow_blank: true
 
     def self.current_payment(order)
-      where(order_id: order.id).order(:created_at).last
+      where(order_id: order.id).order(created_at: :asc).last
     end
 
     def create_solidus_payment!

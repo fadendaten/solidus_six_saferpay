@@ -15,8 +15,9 @@ module Spree
     end
 
     describe '.current_payment' do
-      let(:old_payment) { create(:six_saferpay_payment, order: payment.order, created_at: payment.created_at - 1.hour) }
-      let(:new_payment) { create(:six_saferpay_payment, order: payment.order) }
+      let(:payment) { create(:six_saferpay_payment, created_at: DateTime.current - 10.minutes) }
+      let(:old_payment) { create(:six_saferpay_payment, order: payment.order, created_at: DateTime.current - 1.hour) }
+      let(:new_payment) { create(:six_saferpay_payment, order: payment.order, created_at: DateTime.current) }
 
       before do
         old_payment
