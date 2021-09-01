@@ -8,7 +8,7 @@ module SolidusSixSaferpay
     attr_reader :address_name
 
     def initialize(address)
-      @address_name = extract_names(address)
+      @address_name = extract_first_and_last_name(address)
     end
 
     def first_name
@@ -23,7 +23,7 @@ module SolidusSixSaferpay
 
     private
 
-    def extract_names(address)
+    def extract_first_and_last_name(address)
       return address unless SolidusSupport.combined_first_and_last_name_in_address?
 
       if address.respond_to?(:first_name)
