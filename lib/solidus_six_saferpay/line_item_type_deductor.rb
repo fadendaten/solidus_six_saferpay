@@ -17,7 +17,7 @@ module SolidusSixSaferpay
       @line_item = line_item
     end
 
-    # This very dumb default implementation is based on the fact that by
+    # This implementation is based on the fact that by
     # default, a solidus store only supports physical items.
     # Feel free to override this implementation and determine the correct type
     # based on the line item.

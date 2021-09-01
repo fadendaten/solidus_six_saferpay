@@ -21,23 +21,23 @@ module Spree
         expect { payment.create_solidus_payment! }.to change { Spree::Payment.count }.from(0).to(1)
       end
 
-      it 'sets the order' do
+      it 'persists the order association in the DB' do
         expect(solidus_payment.order).to eq(payment.order)
       end
 
-      it 'sets the payment method' do
+      it 'persists the payment method association in the DB' do
         expect(solidus_payment.payment_method).to eq(payment.payment_method)
       end
 
-      it 'sets the response code' do
+      it 'persists the response code in the DB' do
         expect(solidus_payment.response_code).to eq(payment.transaction_id)
       end
 
-      it 'sets the amount' do
+      it 'persists the amount in the DB' do
         expect(solidus_payment.amount).to eq(payment.order.total)
       end
 
-      it 'sets the source' do
+      it 'persists the source association in the DB' do
         expect(solidus_payment.source).to eq(payment)
       end
     end

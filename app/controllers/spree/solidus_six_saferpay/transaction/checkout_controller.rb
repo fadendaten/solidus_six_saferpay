@@ -3,7 +3,7 @@
 module Spree
   module SolidusSixSaferpay
     module Transaction
-      # explicit parent must be stated, otherwise Spree::CheckoutController has precendence
+      # explicit parent must be stated, otherwise Spree::CheckoutController has precedence
       class CheckoutController < SolidusSixSaferpay::CheckoutController
         private
 

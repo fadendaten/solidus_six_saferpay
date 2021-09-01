@@ -20,10 +20,10 @@ module Spree
             token: '234uhfh78234hlasdfh8234e1234',
             expiration: '2015-01-30T12:45:22.258+01:00',
 
-            # this is empty because we don't submit PaymentMeans on initialize already
+            # this is empty because PaymentMeans are not being submitted on initialize
             liability_shift: nil,
 
-            # since we don't provide PaymentMeans on initialize, we must always redirect
+            # it must always be redirected since PaymentMeans are not provided on initialize
             redirect_required: true,
             redirect: SixSaferpay::Redirect.new(redirect_url: '/saferpay/redirect/url', payment_means_required: true)
           )
