@@ -57,7 +57,7 @@ module SolidusSixSaferpay
         city: solidus_address.city,
         country_subdevision_code: nil,
         country_code: solidus_address.country.iso,
-        phone: solidus_address.phone,
+        phone: solidus_address.phone.present? ? solidus_address.phone : nil,
         email: order.email,
       )
     end
