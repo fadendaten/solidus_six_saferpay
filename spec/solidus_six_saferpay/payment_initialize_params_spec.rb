@@ -89,8 +89,8 @@ module SolidusSixSaferpay
               city: order.billing_address.city,
               country_subdevision_code: nil,
               country_code: order.billing_address.country.iso,
-              phone: nil,
-              email: nil
+              phone: order.billing_address.phone,
+              email: order.email,
             ),
             delivery_address: having_attributes(
               first_name: 'John',
@@ -105,8 +105,8 @@ module SolidusSixSaferpay
               city: order.shipping_address.city,
               country_subdevision_code: nil,
               country_code: order.shipping_address.country.iso,
-              phone: nil,
-              email: nil
+              phone: order.shipping_address.phone,
+              email: order.email
             )
           ),
           return_urls: having_attributes(
