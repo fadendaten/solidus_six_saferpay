@@ -42,7 +42,7 @@ module SolidusSixSaferpay
       )
     end
 
-    def six_address(solidus_address)
+    def six_address(order, solidus_address)
       address_name = extract_name(solidus_address)
       SixSaferpay::Address.new(
         first_name: address_name.first_name,
@@ -57,16 +57,16 @@ module SolidusSixSaferpay
         city: solidus_address.city,
         country_subdevision_code: nil,
         country_code: solidus_address.country.iso,
-        phone: nil,
-        email: nil,
+        phone: solidus_address.phone,
+        email: order.email,
       )
     end
 
     def six_payer
       SixSaferpay::Payer.new(
         language_code: I18n.locale,
-        billing_address: six_address(order.bill_address),
-        delivery_address: six_address(order.ship_address)
+        billing_address: six_address(order, order.bill_address),
+        delivery_address: six_address(order, order.ship_address)
       )
     end
 
