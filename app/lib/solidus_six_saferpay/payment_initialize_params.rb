@@ -115,7 +115,7 @@ module SolidusSixSaferpay
       end
 
       tax_rate = tax_rates.first
-      (tax_rate.amount * 1000).to_i
+      (tax_rate.amount * 10_000).to_i
     end
   end
 end
