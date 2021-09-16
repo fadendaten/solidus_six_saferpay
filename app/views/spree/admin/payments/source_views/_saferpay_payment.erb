@@ -1,23 +1,25 @@
 <% source = payment.source %>
 <% address = source.address %>
 <fieldset data-hook="credit_card">
-  <legend align="center"><%= Spree::CreditCard.model_name.human %></legend>
+  <legend align="center"><%= source.display_text %></legend>
 
   <div class="row">
     <div class="col-4">
-      <dl>
-        <dt><%= t('spree.name_on_card') %>:</dt>
-        <dd><%= source.card.holder_name %></dd>
+      <% if source.card.present? %>
+        <dl>
+          <dt><%= t('spree.name_on_card') %>:</dt>
+          <dd><%= source.card.holder_name %></dd>
 
-        <dt><%= Spree::CreditCard.human_attribute_name(:cc_type) %>:</dt>
-        <dd><%= source.brand_name %></dd>
+          <dt><%= Spree::CreditCard.human_attribute_name(:cc_type) %>:</dt>
+          <dd><%= source.brand_name %></dd>
 
-        <dt><%= Spree::CreditCard.human_attribute_name(:number) %>:</dt>
-        <dd><%= source.display_text %></dd>
+          <dt><%= Spree::CreditCard.human_attribute_name(:number) %>:</dt>
+          <dd><%= source.display_text %></dd>
 
-        <dt><%= Spree::CreditCard.human_attribute_name(:expiration) %>:</dt>
-        <dd><%= source.month %>/<%= source.year %></dd>
-      </dl>
+          <dt><%= Spree::CreditCard.human_attribute_name(:expiration) %>:</dt>
+          <dd><%= source.month %>/<%= source.year %></dd>
+        </dl>
+      <% end %>
 
       <div data-hook="address">
         <%= "#{address.first_name} #{address.last_name}" %><br />
